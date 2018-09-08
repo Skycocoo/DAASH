@@ -28,8 +28,8 @@ function findPastDataByState(state) {
 
 // findPastData('NE', 'Pawnee');
 
-function findRecentData(radius, latlong, endDate, startDate) {
-    client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${latlong}`,
+function findRecentData(radius, lat, lng, endDate, startDate) {
+    client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${lat},${lng}`,
         'end.lte': endDate, 'start.gte': startDate})
         .then((results)=>{
             for (let event of results) {
@@ -40,12 +40,22 @@ function findRecentData(radius, latlong, endDate, startDate) {
 
 // findRecentData(20, '39.9526,-75.1652', '2018-09-08', '2018-09-01');
 
-function findCurrentData(radius, latlong, activeDate) {
-    client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${latlong}`, 'active.gte': activeDate})
+function findCurrentData(radius, lat, lng,  activeDate, callback) {
+    let data = [];
+    client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${lat},${lng}`, 'active.gte': activeDate})
         .then((results)=>{
             for (let event of results) {
-                console.log(event.title);
+                let markerInfo = {
+                    title: event.title,
+                    desc: event.description,
+                    lat: event.location[1],
+                    lng: event.location[0]
+                };
+
+                data.push(markerInfo);
             }
+            // console.log(data);
+            callback(data);
         });
 }
 
@@ -67,9 +77,7 @@ function findNews(city) { // still kinda messed up, not sure why :((((((((
     });
 }
 
-findNews("Seattle");
-
-
+// findNews("Seattle");
 
 module.exports = () => {
     const router = express.Router();
@@ -89,6 +97,12 @@ module.exports = () => {
                 }
                 res.render('index', {data: data});
             });
+    });
+
+    router.post('/curdata', (req, res, next) => {
+        findCurrentData(req.body.radius, req.body.lat, req.body.lng, req.body.date, (data) => {
+            res.send(data);
+        });
     });
 
     return router;
