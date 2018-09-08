@@ -49,7 +49,6 @@ function findDisaster(radius, lat, lng,  activeDate, callback) {
     client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${lat},${lng}`, 'active.gte': activeDate})
         .then((results)=>{
             for (let event of results) {
-                console.log(JSON.stringify(event.labels));
                 let markerInfo = {
                     title: event.title,
                     desc: event.description,
@@ -65,28 +64,35 @@ function findDisaster(radius, lat, lng,  activeDate, callback) {
         });
 }
 
-function findNews(lat, lng) { // still kinda messed up, not sure why :((((((((
+function findNews(lat, lng, date, callback) {
+    let news = [];
     const query = {latitude: lat, longitude: lng};
     const cities = nearbyCities(query);
+    console.log(cities[0]);
 
     newsapi.v2.everything({
-        q: `${cities[0]}`, // Add different disasters here
+        q: `${cities[0].name}`, // Add different disasters here
         // sources: 'reuters,associated-press,abc-news,cnn,mscnbc,cnbc',
-        from: '2018-09-01',
-        to: '2018-09-08',
+        from: date,
         language: 'en',
         sortBy: 'relevancy'
     }).then(response => {
         response.articles.forEach((article) => {
-            if (article.title.includes(`${city}`)) {
-                console.log(article.title);
+            if (article.title.includes(`${cities[0].name}`)) {
+                newsArticle = {
+                    title: article.title,
+                    url: article.url,
+                    img: article.urlToImage
+                };
+
+                news.push(newsArticle);
             }
         });
-
+        callback(news);
     });
 }
+// findNews(39.9526, -75.1652, '2018-09-01');
 
-findNews("Australia");
 // firebase
 
 function initFirebase () {
@@ -135,6 +141,12 @@ module.exports = () => {
 
     router.post('/curdata', (req, res, next) => {
         findDisaster(req.body.radius, req.body.lat, req.body.lng, req.body.date, (data) => {
+            res.send(data);
+        });
+    });
+
+    router.post('/news', (req, res, next) => {
+        findNews(req.body.lat, req.body.lng, req.body.date, (data) => {
             res.send(data);
         });
     });

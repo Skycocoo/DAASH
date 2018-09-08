@@ -23,7 +23,8 @@ if(dd < 10) {
 if(mm < 10) {
     mm = '0' + mm;
 }
-let url = "http://localhost:3000/curdata";
+const curDisasterUrl = "http://localhost:3000/curdata";
+// const newsUrl = "http://localhost:3000/news";
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
@@ -47,7 +48,7 @@ function initMap() {
             };
 
             let xhr = new XMLHttpRequest();
-            xhr.open('POST', url, true);
+            xhr.open('POST', curDisasterUrl, true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     JSON.parse(xhr.response).forEach((event) => {
@@ -57,15 +58,30 @@ function initMap() {
             };
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.send(JSON.stringify(request));
-            // findCurrentData(10, lat, lng, '2018-09-01', (res) => {
-            //     console.log(res);
-            // });
+
+            //
+            // let request2 = {
+            //     lat: `${lat}`,
+            //     lng: `${lng}`,
+            //     date: `${yyyy}-${mm}-${dd}`
+            // };
+            // let xhr2 = new XMLHttpRequest();
+            // xhr2.open('POST', newsUrl, true);
+            // xhr2.onreadystatechange = function() {
+            //     if (xhr2.readyState === 4 && xhr2.status === 200) {
+            //         console.log(xhr2.responseText);
+            //     }
+            // };
+            // xhr2.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            // xhr2.send(JSON.stringify(request2));
+
         }
     });
-    
+
 }
 
 function addMarker(lat, lng, title, desc, disaster) {
+    console.log(title);
     console.log(disaster);
     let uluru = {lat, lng};
     let marker = new google.maps.Marker({
