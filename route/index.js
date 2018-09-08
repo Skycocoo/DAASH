@@ -13,6 +13,7 @@ const nearbyCities = require("nearby-cities");
 const firebase = require('firebase');
 require("firebase/firestore");
 
+const db = initFirebase();
 
 // openfema database
 function findPastDataByState(state, callback) {
@@ -105,8 +106,6 @@ function initFirebase () {
 }
 
 function insertPastFirebase() {
-    let db = initFirebase();
-
     // https://gist.github.com/dsoverby1986/df89c1ed31f3b74b1b85c73bfae1d095
     let states = [
         { name: 'Alabama', abbrev: 'AL' },
@@ -198,12 +197,12 @@ function insertPastFirebase() {
 }
 
 function fetchPast(callback) {
-    let db = initFirebase();
+    let data = {};
     db.collection('states')
         .get()
         .then(query => {
             query.forEach(doc => {
-                callback(null, doc.data());
+                data[doc.data().name] = doc.data().sum;
                 // // cannot query for that many documents
                 // let docRef = db.collection('states').doc(doc.id);
                 // docRef.collection('counties')
@@ -215,6 +214,7 @@ function fetchPast(callback) {
                 //     })
                 //     .catch(err => { console.log(err); });
             });
+            callback(null, data);
         })
         .catch(err => { callback(err, null); });
 }
@@ -227,11 +227,13 @@ module.exports = () => {
     // insertPastFirebase();
 
     router.get('/', (req, res, next) => {
-        res.render('index');
+        // res.render('index');
         fetchPast((err, data) => {
             if (err) console.log(err);
-            // console.log(data);
-            res.send(data);
+            console.log(data);
+            // res.send(data);
+            res.render('index', { data: data });
+            // res.end();
         });
     });
 
