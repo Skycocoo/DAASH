@@ -23,6 +23,29 @@ function findPastDataByState(state, callback) {
     });
 }
 
+function findDisaster(date, callback) {
+    let data = [];
+    request(`https://www.fema.gov/api/open/v1/DisasterDeclarationsSummaries?$filter=declarationDate%20gt%20%27${date}T04:00:00.000z%27`, function (error, response, body) {
+        if (error) callback(error, []);
+
+        JSON.parse(body).DisasterDeclarationsSummaries.forEach((disaster) => {
+            if (disaster.incidentEndDate === undefined) {
+                let markerInfo = {
+                    title: disaster.title,
+                    county: disaster.declaredCountyArea.split(" ")[0],
+                    state: disaster.state,
+                    type: disaster.incidentType
+                };
+                // console.log(disaster);
+                data.push(markerInfo);
+            }
+        });
+        callback(data);
+    });
+}
+
+// findPastDataByState('NE');
+
 function findRecentData(radius, lat, lng, endDate, startDate) {
     client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${lat},${lng}`,
         'end.lte': endDate, 'start.gte': startDate})
@@ -30,26 +53,6 @@ function findRecentData(radius, lat, lng, endDate, startDate) {
             for (let event of results) {
                 console.log(event.title);
             }
-        });
-}
-
-function findDisaster(radius, lat, lng,  activeDate, callback) {
-    let data = [];
-    client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${lat},${lng}`, 'active.gte': activeDate})
-        .then((results)=>{
-            for (let event of results) {
-                let markerInfo = {
-                    title: event.title,
-                    desc: event.description,
-                    lat: event.location[1],
-                    lng: event.location[0],
-                    type: event.labels[0]
-                };
-
-                data.push(markerInfo);
-            }
-            // console.log(data);
-            callback(data);
         });
 }
 
@@ -238,7 +241,7 @@ module.exports = () => {
     });
 
     router.post('/curdata', (req, res, next) => {
-        findDisaster(req.body.radius, req.body.lat, req.body.lng, req.body.date, (data) => {
+        findDisaster(req.body.date, (data) => {
             res.send(data);
         });
     });

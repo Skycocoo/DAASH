@@ -4,17 +4,27 @@ let map;
 let lastLat = 0;
 let lastLng = 0;
 let today = new Date();
+let curMarker = {};
 
 let dd = (today.getDate() < 10) ? '0'+today.getDate() : today.getDate();
-let mm = (today.getMonth()+1 < 10) ? '0'+today.getMonth()+1 : today.getMonth()+1; // January is 0!
+let mm = (today.getMonth() < 10) ? '0'+ (today.getMonth() - 1) : today.getMonth() - 1; // January is 0!
 let yyyy = today.getFullYear();
 
 let disasters = {
-    flood: {
+    Flood: {
         color: '#6ACBFF',
         radius: 7000
+    },
+    Fire: {
+        color: '#ff312c',
+        radius: 8000
     }
 };
+
+if (mm <= 0) {
+    mm = mm + 11;
+    yyyy -= 1;
+}
 
 const curDisasterUrl = "http://localhost:3000/curdata";
 // const newsUrl = "http://localhost:3000/news";
@@ -30,6 +40,33 @@ function initMap() {
         zoom: 8
     });
 
+    let request = {
+        date: `${yyyy}-${mm}-${dd}`
+    };
+
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', curDisasterUrl, true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            JSON.parse(xhr.response).forEach((event) => {
+
+                let xhr2 = new XMLHttpRequest();
+                xhr2.open('GET', `https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/geocode/json?components=administrative_area:${event.state}|administrative_area:${event.county}&key=AIzaSyC7ykUUPTmMCeAfmSTnbk0f0cHnYbojaII`, true);
+                xhr2.onreadystatechange = function() {
+                    if (xhr2.readyState === 4 && xhr2.status === 200 && JSON.parse(xhr2.response).results[0]) {
+                        addMarker(JSON.parse(xhr2.response).results[0].geometry.location.lat,
+                            JSON.parse(xhr2.response).results[0].geometry.location.lng,
+                            event.title, event.type);
+                    }
+                };
+                xhr2.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                xhr2.send();
+            });
+        }
+    };
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.send(JSON.stringify(request));
+
     google.maps.event.addListener(map, "dragend", function () {
         let lat = map.data.map.center.lat();
         let lng = map.data.map.center.lng();
@@ -37,25 +74,6 @@ function initMap() {
         if (lastLat === 0 && lastLng === 0 || calcCrow(lat, lng) >= 8) {
             lastLat = lat;
             lastLng = lng;
-
-            let request = {
-                radius: "20",
-                lat: `${lat}`,
-                lng: `${lng}`,
-                date: `${yyyy}-${mm}-${dd}`
-            };
-
-            let xhr = new XMLHttpRequest();
-            xhr.open('POST', curDisasterUrl, true);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    JSON.parse(xhr.response).forEach((event) => {
-                        addMarker(event.lat, event.lng, event.title, event.desc, event.type);
-                    });
-                }
-            };
-            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xhr.send(JSON.stringify(request));
         }
     });
     directionsDisplay.setMap(map);
@@ -88,7 +106,7 @@ function calcRoute() {
 
 }
 
-function addMarker(lat, lng, title, desc, disaster) {
+function addMarker(lat, lng, title, disaster) {
     let uluru = {lat, lng};
     let marker = new google.maps.Marker({
         position: uluru,
@@ -111,7 +129,6 @@ function addMarker(lat, lng, title, desc, disaster) {
         let modal = $('#modal');
         // modal.find('.modal_title').text("TEST");
         $('#modal-title').text(title);
-        $('#modal-body').text(desc);
         modal.modal();
         map.setCenter(uluru);
         map.setZoom(11);
