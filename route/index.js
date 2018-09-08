@@ -184,7 +184,7 @@ function insertPastFirebase() {
     ];
     const initial = states.map(i => i.abbrev);
 
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < initial.length; i++) {
         db.collection('states').add({
             name: initial[i],
         }).then(doc => {
@@ -194,9 +194,12 @@ function insertPastFirebase() {
                 let result = 0;
 
                 for (let i = 0; i < body.DisasterDeclarationsSummaries.length; i++) {
-                    if (body.DisasterDeclarationsSummaries[i].declaredCountyArea.length == 0) continue;
                     let name = body.DisasterDeclarationsSummaries[i].declaredCountyArea.split(" ");
-                    name.splice(-1, 1);
+                    if (name.length == 0) {
+                        console.log(pass);
+                        continue;
+                    }
+                    if (name.length > 1) name.splice(-1, 1);
                     name.join(" ");
                     result += body.DisasterDeclarationsSummaries[i].disasterNumber;
                     doc.collection('counties').add({
@@ -219,7 +222,8 @@ function insertPastFirebase() {
 module.exports = () => {
     const router = express.Router();
 
-    insertPastFirebase();
+    // only need to process once
+    // insertPastFirebase();
 
     router.get('/', (req, res, next) => {
         res.render('index');
