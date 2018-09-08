@@ -8,6 +8,7 @@ const phq = require('predicthq');
 let client = new phq.Client({access_token: "BsTZYhJxF0jBXE9GG7a0e7zM4JyNq9", fetch: fetch});
 const NewsAPI = require('newsapi');
 const newsapi = new NewsAPI('bbc2f161eef842538b561fe4256186a0');
+const nearbyCities = require("nearby-cities");
 
 const firebase = require('firebase');
 require("firebase/firestore");
@@ -28,8 +29,8 @@ function findPastDataByState(state, callback) {
 
 // findPastDataByState('NE');
 
-function findRecentData(radius, latlong, endDate, startDate) {
-    client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${latlong}`,
+function findRecentData(radius, lat, lng, endDate, startDate) {
+    client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${lat},${lng}`,
         'end.lte': endDate, 'start.gte': startDate})
         .then((results)=>{
             for (let event of results) {
@@ -40,50 +41,54 @@ function findRecentData(radius, latlong, endDate, startDate) {
 
 // findRecentData(20, '39.9526,-75.1652', '2018-09-08', '2018-09-01');
 
-function findCurrentData(radius, latlong, activeDate) {
-    client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${latlong}`, 'active.gte': activeDate})
+function findDisaster(radius, lat, lng,  activeDate, callback) {
+    let data = [];
+    client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${lat},${lng}`, 'active.gte': activeDate})
         .then((results)=>{
             for (let event of results) {
-                console.log(event.title);
+                let markerInfo = {
+                    title: event.title,
+                    desc: event.description,
+                    lat: event.location[1],
+                    lng: event.location[0],
+                    type: event.labels[0]
+                };
+
+                data.push(markerInfo);
             }
+            // console.log(data);
+            callback(data);
         });
 }
 
-function findNews(city) { // still kinda messed up, not sure why :((((((((
+function findNews(lat, lng, date, callback) {
+    let news = [];
+    const query = {latitude: lat, longitude: lng};
+    const cities = nearbyCities(query);
+    console.log(cities[0]);
+
     newsapi.v2.everything({
-        q: `${city} wildfire OR ${city} fire`, // Add different disasters here
-        sources: 'reuters,associated-press,abc-news,cnn,mscnbc,cnbc',
-        from: '2018-09-01',
-        to: '2018-09-08',
+        q: `${cities[0].name}`, // Add different disasters here
+        // sources: 'reuters,associated-press,abc-news,cnn,mscnbc,cnbc',
+        from: date,
         language: 'en',
         sortBy: 'relevancy'
     }).then(response => {
         response.articles.forEach((article) => {
-            if (article.title.includes(`${city}`)) {
-                console.log(article.title);
+            if (article.title.includes(`${cities[0].name}`)) {
+                newsArticle = {
+                    title: article.title,
+                    url: article.url,
+                    img: article.urlToImage
+                };
+
+                news.push(newsArticle);
             }
         });
-
+        callback(news);
     });
 }
-
-// findNews("Seattle");
-
-function findDisaster(latlong, radius, date) {
-    client.events.search({category: 'disasters, severe-weather', within: `${radius}@${latlong}`, 'active.gte': date})
-        .then((results)=>{
-            let data = [];
-            for (let event of results) {
-                // console.log(event.title);
-                data.push(event.title);
-            }
-            console.log(data)
-            // res.render('index', {data: data});
-        });
-}
-
-// findDisaster('39.9526,-75.1652', '20km', '2018-09-01');
-
+// findNews(39.9526, -75.1652, '2018-09-01');
 
 // firebase
 
@@ -227,6 +232,18 @@ module.exports = () => {
 
     router.get('/', (req, res, next) => {
         res.render('index');
+    });
+
+    router.post('/curdata', (req, res, next) => {
+        findDisaster(req.body.radius, req.body.lat, req.body.lng, req.body.date, (data) => {
+            res.send(data);
+        });
+    });
+
+    router.post('/news', (req, res, next) => {
+        findNews(req.body.lat, req.body.lng, req.body.date, (data) => {
+            res.send(data);
+        });
     });
 
     return router;
