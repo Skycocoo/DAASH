@@ -30,8 +30,14 @@ function initMap() {
             let xhr = new XMLHttpRequest();
             xhr.open('POST', url, true);
             xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200)
-                    console.log(xhr.responseText);
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    let counter = .0000001;
+                    JSON.parse(xhr.response).forEach((event) => {
+                        console.log(event);
+                        addMarker(event.lat + counter, event.lng + counter, event.title);
+                        counter += .00000001;
+                    });
+                }
             };
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.send(JSON.stringify(request));
@@ -45,6 +51,18 @@ function initMap() {
 
 }
 
+function addMarker(lat, lng, title) {
+    let uluru = {lat, lng};
+    let marker = new google.maps.Marker({
+        position: uluru,
+        title: "Lightning",
+        map: map
+    });
+
+    marker.addListener('click', function() {
+        alert(title);
+    })
+}
 
 function addCustomMarker() {
     let icons = {
