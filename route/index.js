@@ -1,13 +1,13 @@
 // Created by Yuxi Luo, July 2018
 
 const express = require('express');
+const request = require('request');
 const fetch = require('node-fetch');
+
 const phq = require('predicthq');
 let client = new phq.Client({access_token: "BsTZYhJxF0jBXE9GG7a0e7zM4JyNq9", fetch: fetch});
-const request = require('request');
 const NewsAPI = require('newsapi');
 const newsapi = new NewsAPI('bbc2f161eef842538b561fe4256186a0');
-
 
 
 function findPastData(state, county) {
@@ -69,7 +69,6 @@ module.exports = () => {
     const latlong = '39.9526,-75.1652';
     const radius = '20km';
     const date = '2018-09-01';
-
 
 
     router.get('/', (req, res, next) => {
