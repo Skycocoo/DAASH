@@ -16,11 +16,12 @@
     "mongoose": "^5.2.4",
     "morgan": "~1.9.0",
     "multer": "^1.3.1",
+    "node-fetch": "^2.2.0",
     "node-sass-middleware": "^0.11.0",
     "ol": "^5.1.3",
     "ol-hashed": "^2.0.0",
     "ol-mapbox-style": "^3.0.1",
-    "node-fetch": "^2.2.0",
-    "predicthq": "0.0.19"
+    "predicthq": "0.0.19",
+    "request": "^2.88.0"
   }
 }
