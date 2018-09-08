@@ -5,6 +5,7 @@
 <head>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
+    <script src="../js/index.js"></script>
     <script src="https://www.gstatic.com/firebasejs/5.4.2/firebase.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B" crossorigin="anonymous">
     <link rel="stylesheet" href="css/index.css">
@@ -12,6 +13,14 @@
 </head>
 
 <body>
+    <script>
+        function askForCoordinates(){
+            if(getGeolocation()){
+                //need to set center of map to lat and long for initMap
+            }
+        }
+        askForCoordinates();
+    </script>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#"> Our Proj Name </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,7 +39,7 @@
         <p> placeholder for features of our proj </p>
     </div>
 
-    <div class="modal fade col-md-4 float-right" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -42,7 +51,7 @@
                 <div class="modal-body" id="modal-body">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Find Help</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="calcRoute()">Directions to Nearest Red Cross</button>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div>
             </div>

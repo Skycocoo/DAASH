@@ -19,7 +19,12 @@ let disasters = {
 const curDisasterUrl = "http://localhost:3000/curdata";
 // const newsUrl = "http://localhost:3000/news";
 
+let directionsService;
+let directionsDisplay;
+
 function initMap() {
+    directionsService = new google.maps.DirectionsService();
+    directionsDisplay = new google.maps.DirectionsRenderer();
     map = new google.maps.Map(document.getElementById('map'), {
         center: {lat: 34.397, lng: -80},
         zoom: 8
@@ -29,7 +34,7 @@ function initMap() {
         let lat = map.data.map.center.lat();
         let lng = map.data.map.center.lng();
 
-        if (lastLat === 0 && lastLng === 0 || calcCrow(lat, lng, lastLat, lastLng) >= 8) {
+        if (lastLat === 0 && lastLng === 0 || calcCrow(lat, lng) >= 8) {
             lastLat = lat;
             lastLng = lng;
 
@@ -51,31 +56,39 @@ function initMap() {
             };
             xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xhr.send(JSON.stringify(request));
-
-            //
-            // let request2 = {
-            //     lat: `${lat}`,
-            //     lng: `${lng}`,
-            //     date: `${yyyy}-${mm}-${dd}`
-            // };
-            // let xhr2 = new XMLHttpRequest();
-            // xhr2.open('POST', newsUrl, true);
-            // xhr2.onreadystatechange = function() {
-            //     if (xhr2.readyState === 4 && xhr2.status === 200) {
-            //         console.log(xhr2.responseText);
-            //     }
-            // };
-            // xhr2.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            // xhr2.send(JSON.stringify(request2));
-
         }
     });
+    directionsDisplay.setMap(map);
+}
+
+function calcRoute() {
+    let uluru = {};
+    let xhr = new XMLHttpRequest();
+    const url = `https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/textsearch/json?location=${lastLat},${lastLng}&radius=1500&query=Red%20Cross&key=AIzaSyC7ykUUPTmMCeAfmSTnbk0f0cHnYbojaII`;
+    xhr.open('GET', url, true);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            uluru.lat = JSON.parse(xhr.responseText).results[0].geometry.location.lat;
+            uluru.lng = JSON.parse(xhr.responseText).results[0].geometry.location.lng;
+
+            let request = {
+                origin: {lat: curMarker.lat, lng: curMarker.lng},
+                destination: uluru,
+                travelMode: "DRIVING"
+            };
+            directionsService.route(request, function(response, status) {
+                if (status === 'OK') {
+                    directionsDisplay.setDirections(response);
+                }
+            });
+        }
+    };
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhr.send();
 
 }
 
 function addMarker(lat, lng, title, desc, disaster) {
-    console.log(title);
-    console.log(disaster);
     let uluru = {lat, lng};
     let marker = new google.maps.Marker({
         position: uluru,
@@ -84,14 +97,14 @@ function addMarker(lat, lng, title, desc, disaster) {
     });
 
     let circle  = new google.maps.Circle({
-        strokeColor: disasters[disaster].color,
+        strokeColor: (disasters[disaster]  === undefined) ? '#8d8d8d' : disasters[disaster].color,
         strokeOpacity: 0.8,
         strokeWeight: 2,
-        fillColor: disasters[disaster].color,
+        fillColor: (disasters[disaster]  === undefined) ? '#8d8d8d' : disasters[disaster].color,
         fillOpacity: 0.1,
         map: map,
         center: uluru,
-        radius: disasters[disaster].radius
+        radius: (disasters[disaster]  === undefined) ? 3000 : disasters[disaster].radius
     });
 
     marker.addListener('click', function() {
@@ -102,6 +115,7 @@ function addMarker(lat, lng, title, desc, disaster) {
         modal.modal();
         map.setCenter(uluru);
         map.setZoom(11);
+        curMarker = uluru;
     })
 }
 
@@ -133,7 +147,9 @@ function addCustomMarker() {
     })
 }
 
-function calcCrow(lat1, lon1, lat2, lon2) {
+function calcCrow(lat1, lon1) {
+    let lat2 = lastLat;
+    let lon2 = lastLng;
     let R = 6371;
     let dLat = toRad(lat2 - lat1);
     let dLon = toRad(lon2 - lon1);
