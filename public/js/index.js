@@ -5,8 +5,9 @@ let lastLat = 0;
 let lastLng = 0;
 let today = new Date();
 let curMarker = {};
-let dd = today.getDate();
-let mm = today.getMonth() - 1; //January is 0!
+
+let dd = (today.getDate() < 10) ? '0'+today.getDate() : today.getDate();
+let mm = (today.getMonth() < 10) ? '0'+ (today.getMonth() - 1) : today.getMonth() - 1; // January is 0!
 let yyyy = today.getFullYear();
 
 let disasters = {
@@ -20,18 +21,11 @@ let disasters = {
     }
 };
 
-if(dd < 10) {
-    dd = '0' + dd;
-}
-
-if(mm < 10) {
-    mm = '0' + mm;
-}
-
 if (mm <= 0) {
-    mm = 11;
+    mm = mm + 11;
     yyyy -= 1;
 }
+
 const curDisasterUrl = "http://localhost:3000/curdata";
 // const newsUrl = "http://localhost:3000/news";
 
@@ -60,7 +54,6 @@ function initMap() {
                 xhr2.open('GET', `https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/geocode/json?components=administrative_area:${event.state}|administrative_area:${event.county}&key=AIzaSyC7ykUUPTmMCeAfmSTnbk0f0cHnYbojaII`, true);
                 xhr2.onreadystatechange = function() {
                     if (xhr2.readyState === 4 && xhr2.status === 200 && JSON.parse(xhr2.response).results[0]) {
-                        console.log(JSON.parse(xhr2.response).results[0].geometry.location.lat);
                         addMarker(JSON.parse(xhr2.response).results[0].geometry.location.lat,
                             JSON.parse(xhr2.response).results[0].geometry.location.lng,
                             event.title, event.type);
@@ -190,4 +183,16 @@ function calcCrow(lat1, lon1) {
 // Converts numeric degrees to radians
 function toRad(Value) {
     return Value * Math.PI / 180;
+}
+
+function findGif(weatherType) { //doesn't work yet
+    var gifString = "http://api.giphy.com/v1/stickers/random?api_key=9NhVNvR04acYobvWGIGoiY5B9pla2JZV&tag=" + weatherType;
+    xhr.open("GET", gifString);
+    xhr.send();
+    xhr.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var data = xhr.responseText;
+            return data.data[0].images.downsized.url;//public url to gif < 2 MB
+        }
+    }
 }
