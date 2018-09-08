@@ -5,8 +5,10 @@ const sassMiddleware = require('node-sass-middleware');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const fetch = require('node-fetch');
+
 const phq = require('predicthq');
 let client = new phq.Client({access_token: "BsTZYhJxF0jBXE9GG7a0e7zM4JyNq9", fetch: fetch});
+
 const router = require('./route/index');
 const app = express();
 // view engine setup
