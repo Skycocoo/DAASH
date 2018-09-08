@@ -62,9 +62,7 @@ function initMap() {
             // });
         }
     });
-
-
-
+    
 }
 
 function addMarker(lat, lng, title, desc, disaster) {

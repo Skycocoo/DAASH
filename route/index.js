@@ -8,6 +8,7 @@ const phq = require('predicthq');
 let client = new phq.Client({access_token: "BsTZYhJxF0jBXE9GG7a0e7zM4JyNq9", fetch: fetch});
 const NewsAPI = require('newsapi');
 const newsapi = new NewsAPI('bbc2f161eef842538b561fe4256186a0');
+const nearbyCities = require("nearby-cities");
 
 const firebase = require('firebase');
 require("firebase/firestore");
@@ -64,10 +65,13 @@ function findDisaster(radius, lat, lng,  activeDate, callback) {
         });
 }
 
-function findNews(city) { // still kinda messed up, not sure why :((((((((
+function findNews(lat, lng) { // still kinda messed up, not sure why :((((((((
+    const query = {latitude: lat, longitude: lng};
+    const cities = nearbyCities(query);
+
     newsapi.v2.everything({
-        q: `${city} wildfire OR ${city} fire`, // Add different disasters here
-        sources: 'reuters,associated-press,abc-news,cnn,mscnbc,cnbc',
+        q: `${cities[0]}`, // Add different disasters here
+        // sources: 'reuters,associated-press,abc-news,cnn,mscnbc,cnbc',
         from: '2018-09-01',
         to: '2018-09-08',
         language: 'en',
@@ -82,6 +86,7 @@ function findNews(city) { // still kinda messed up, not sure why :((((((((
     });
 }
 
+findNews("Australia");
 // firebase
 
 function initFirebase () {
