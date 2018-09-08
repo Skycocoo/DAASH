@@ -3,39 +3,49 @@
 let map;
 let lastLat = 0;
 let lastLng = 0;
+let today = new Date();
+
+let dd = today.getDate();
+let mm = today.getMonth()+1; //January is 0!
+let yyyy = today.getFullYear();
+
+if(dd < 10) {
+    dd = '0' + dd;
+}
+
+if(mm < 10) {
+    mm = '0' + mm;
+}
 let url = "http://localhost:3000/curdata";
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: -34.397, lng: 150.644},
+        center: {lat: 34.397, lng: -80},
         zoom: 8
     });
 
     google.maps.event.addListener(map, "dragend", function () {
         let lat = map.data.map.center.lat();
         let lng = map.data.map.center.lng();
-        console.log(lat, lng);
 
-        if (lastLat === 0 && lastLng === 0 || calcCrow(lat, lng, lastLat, lastLng) >= 5) {
+        if (lastLat === 0 && lastLng === 0 || calcCrow(lat, lng, lastLat, lastLng) >= 8) {
             lastLat = lat;
             lastLng = lng;
 
             let request = {
-                radius: "10",
+                radius: "20",
                 lat: `${lat}`,
                 lng: `${lng}`,
-                date: "2018-09-01"
+                date: `${yyyy}-${mm}-${dd}`
             };
 
             let xhr = new XMLHttpRequest();
             xhr.open('POST', url, true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
-                    let counter = .0000001;
                     JSON.parse(xhr.response).forEach((event) => {
-                        console.log(event);
-                        addMarker(event.lat + counter, event.lng + counter, event.title);
-                        counter += .00000001;
+
+                        addMarker(event.lat, event.lng, event.title, event.desc);
                     });
                 }
             };
@@ -51,16 +61,20 @@ function initMap() {
 
 }
 
-function addMarker(lat, lng, title) {
+function addMarker(lat, lng, title, desc) {
     let uluru = {lat, lng};
     let marker = new google.maps.Marker({
         position: uluru,
-        title: "Lightning",
+        title,
         map: map
     });
 
     marker.addListener('click', function() {
-        alert(title);
+        let modal = $('#modal');
+        // modal.find('.modal_title').text("TEST");
+        $('#modal-title').text(title);
+        $('#modal-body').text(desc);
+        modal.modal();
     })
 }
 
