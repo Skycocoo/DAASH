@@ -5,6 +5,9 @@ const fetch = require('node-fetch');
 const phq = require('predicthq');
 let client = new phq.Client({access_token: "BsTZYhJxF0jBXE9GG7a0e7zM4JyNq9", fetch: fetch});
 const request = require('request');
+const NewsAPI = require('newsapi');
+const newsapi = new NewsAPI('bbc2f161eef842538b561fe4256186a0');
+
 
 
 function findPastData(state, county) {
@@ -37,6 +40,27 @@ function findCurrentData(radius, latlong, activeDate) {
             }
         });
 }
+
+function findNews(city) { // still kinda messed up, not sure why :((((((((
+    newsapi.v2.everything({
+        q: `${city} wildfire OR ${city} fire`, // Add different disasters here
+        sources: 'reuters,associated-press,abc-news,cnn,mscnbc,cnbc',
+        from: '2018-09-01',
+        to: '2018-09-08',
+        language: 'en',
+        sortBy: 'relevancy'
+    }).then(response => {
+        response.articles.forEach((article) => {
+            if (article.title.includes(`${city}`)) {
+                console.log(article.title);
+            }
+        });
+
+    });
+}
+
+findNews("Seattle");
+
 
 
 module.exports = () => {
