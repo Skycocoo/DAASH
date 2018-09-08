@@ -13,11 +13,13 @@ let yyyy = today.getFullYear();
 let disasters = {
     Flood: {
         color: '#6ACBFF',
-        radius: 7000
+        radius: 7000,
+        icon: '/img/lightning2u.png'
     },
     Fire: {
         color: '#ff312c',
-        radius: 8000
+        radius: 8000,
+        icon: '/img/fire.png'
     }
 };
 
@@ -108,6 +110,25 @@ function calcRoute() {
 
 function addMarker(lat, lng, title, disaster) {
     let uluru = {lat, lng};
+    // if (disasters[disaster].icon !== undefined) {
+    //     let image = {
+    //         url: disasters[disaster].icon,
+    //         size: new google.maps.Size(50, 50),
+    //         origin: new google.maps.Point(0, 0),
+    //         anchor: new google.maps.Point(0, 32),
+    //         scaledSize: new google.maps.Size(40, 40)
+    //     };
+    //
+    //     let marker = new google.maps.Marker({
+    //         position: uluru,
+    //         title,
+    //         icon: image,
+    //         map: map
+    //     });
+    // } else {
+    //
+    // }
+
     let marker = new google.maps.Marker({
         position: uluru,
         title,
@@ -139,17 +160,11 @@ function addMarker(lat, lng, title, disaster) {
 function addCustomMarker() {
     let icons = {
         lightning: {
-            icon: '/img/lightning2u.png'
+
         }
     };
 
-    let image = {
-        url: icons.lightning.icon,
-        size: new google.maps.Size(50, 50),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(0, 32),
-        scaledSize: new google.maps.Size(40, 40)
-    };
+
 
     let uluru = {lat: 39.9526, lng: -75.1652};
     let marker = new google.maps.Marker({
