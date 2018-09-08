@@ -167,3 +167,15 @@ function calcCrow(lat1, lon1) {
 function toRad(Value) {
     return Value * Math.PI / 180;
 }
+
+function findGif(weatherType) { //doesn't work yet
+    var gifString = "http://api.giphy.com/v1/stickers/random?api_key=9NhVNvR04acYobvWGIGoiY5B9pla2JZV&tag=" + weatherType;
+    xhr.open("GET", gifString);
+    xhr.send();
+    xhr.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            var data = xhr.responseText;
+            return data.data[0].images.downsized.url;//public url to gif < 2 MB
+        }
+    }
+}
