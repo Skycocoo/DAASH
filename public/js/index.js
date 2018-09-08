@@ -9,6 +9,13 @@ let dd = today.getDate();
 let mm = today.getMonth()+1; //January is 0!
 let yyyy = today.getFullYear();
 
+let disasters = {
+    flood: {
+        color: '#6ACBFF',
+        radius: 7000
+    }
+};
+
 if(dd < 10) {
     dd = '0' + dd;
 }
@@ -44,8 +51,7 @@ function initMap() {
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === 4 && xhr.status === 200) {
                     JSON.parse(xhr.response).forEach((event) => {
-
-                        addMarker(event.lat, event.lng, event.title, event.desc);
+                        addMarker(event.lat, event.lng, event.title, event.desc, event.type);
                     });
                 }
             };
@@ -61,12 +67,24 @@ function initMap() {
 
 }
 
-function addMarker(lat, lng, title, desc) {
+function addMarker(lat, lng, title, desc, disaster) {
+    console.log(disaster);
     let uluru = {lat, lng};
     let marker = new google.maps.Marker({
         position: uluru,
         title,
         map: map
+    });
+
+    let circle  = new google.maps.Circle({
+        strokeColor: disasters[disaster].color,
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: disasters[disaster].color,
+        fillOpacity: 0.1,
+        map: map,
+        center: uluru,
+        radius: disasters[disaster].radius
     });
 
     marker.addListener('click', function() {
@@ -75,6 +93,8 @@ function addMarker(lat, lng, title, desc) {
         $('#modal-title').text(title);
         $('#modal-body').text(desc);
         modal.modal();
+        map.setCenter(uluru);
+        map.setZoom(11);
     })
 }
 

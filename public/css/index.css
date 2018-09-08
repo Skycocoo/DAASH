@@ -12,3 +12,8 @@ html, body {
     margin-top: 50px;
     height: 80%;
 }
+
+.modal-dialog {
+    position: fixed;
+    right: 40px;
+}

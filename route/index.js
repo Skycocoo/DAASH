@@ -47,15 +47,14 @@ function findDisaster(radius, lat, lng,  activeDate, callback) {
     let data = [];
     client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${lat},${lng}`, 'active.gte': activeDate})
         .then((results)=>{
-            if (results.overflow) {
-                counter = 1;
-            }
             for (let event of results) {
+                console.log(JSON.stringify(event.labels));
                 let markerInfo = {
                     title: event.title,
                     desc: event.description,
                     lat: event.location[1],
-                    lng: event.location[0]
+                    lng: event.location[0],
+                    type: event.labels[0]
                 };
 
                 data.push(markerInfo);
