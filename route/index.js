@@ -13,21 +13,14 @@ const nearbyCities = require("nearby-cities");
 const firebase = require('firebase');
 require("firebase/firestore");
 
-// function findPastData(callback) {
-//     request(`https://www.fema.gov/api/open/v1/DisasterDeclarationsSummaries.json`, function (error, response, body) {
-//         if (error) callback(error, []);
-//         callback(undefined, JSON.parse(body));
-//     });
-// }
 
+// openfema database
 function findPastDataByState(state, callback) {
     request(`https://www.fema.gov/api/open/v1/DisasterDeclarationsSummaries?$filter=state%20eq%20%27${state}%27`, function (error, response, body) {
         if (error) callback(error, []);
         callback(undefined, JSON.parse(body));
     });
 }
-
-// findPastDataByState('NE');
 
 function findRecentData(radius, lat, lng, endDate, startDate) {
     client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${lat},${lng}`,
@@ -38,8 +31,6 @@ function findRecentData(radius, lat, lng, endDate, startDate) {
             }
         });
 }
-
-// findRecentData(20, '39.9526,-75.1652', '2018-09-08', '2018-09-01');
 
 function findDisaster(radius, lat, lng,  activeDate, callback) {
     let data = [];
@@ -88,7 +79,7 @@ function findNews(lat, lng, date, callback) {
         callback(news);
     });
 }
-// findNews(39.9526, -75.1652, '2018-09-01');
+
 
 // firebase
 
@@ -111,24 +102,6 @@ function initFirebase () {
     });
 
     return db;
-
-    // db.collection("users").add({
-    //     first: "Ada",
-    //     last: "Lovelace",
-    //     born: 1815
-    // }).then(function(docRef) {
-    //     console.log("Document written with ID: ", docRef.id);
-    // }).catch(function(error) {
-    //     console.error("Error adding document: ", error);
-    // });
-    //
-    // db.collection("users").get().then((querySnapshot) => {
-    //     querySnapshot.forEach((doc) => {
-    //         console.log(`${doc.id} => ${doc.data()}`);
-    //     });
-    // });
-    // var messageRef = db.collection('rooms').doc('roomA')
-    //             .collection('messages').doc('message1');
 }
 
 function insertPastFirebase() {
@@ -215,7 +188,7 @@ function insertPastFirebase() {
                 }
                 console.log(result);
                 let docRef = db.collection('states').doc(doc.id);
-                // wait for ~ 1min for this update
+                // wait for ~ 1min for one update per state
                 docRef.set({ sum: result }, { merge: true })
                     .then(() => {console.log("Success");})
                     .catch(err => {console.log("Error: ", err);});;
@@ -223,6 +196,29 @@ function insertPastFirebase() {
         }).catch(err => {console.log(err);});
     }
 }
+
+function fetchPast(callback) {
+    let db = initFirebase();
+    db.collection('states')
+        .get()
+        .then(query => {
+            query.forEach(doc => {
+                callback(null, doc.data());
+                // // cannot query for that many documents
+                // let docRef = db.collection('states').doc(doc.id);
+                // docRef.collection('counties')
+                //     .get()
+                //     .then(querysnap => {
+                //         querysnap.forEach(docsnap => {
+                //             console.log(docsnap.data());
+                //         });
+                //     })
+                //     .catch(err => { console.log(err); });
+            });
+        })
+        .catch(err => { callback(err, null); });
+}
+
 
 module.exports = () => {
     const router = express.Router();
@@ -232,6 +228,11 @@ module.exports = () => {
 
     router.get('/', (req, res, next) => {
         res.render('index');
+        fetchPast((err, data) => {
+            if (err) console.log(err);
+            // console.log(data);
+            res.send(data);
+        });
     });
 
     router.post('/curdata', (req, res, next) => {

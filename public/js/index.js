@@ -5,8 +5,8 @@ let lastLat = 0;
 let lastLng = 0;
 let today = new Date();
 
-let dd = today.getDate();
-let mm = today.getMonth()+1; //January is 0!
+let dd = (today.getDate() < 10) ? '0'+today.getDate() : today.getDate();
+let mm = (today.getMonth()+1 < 10) ? '0'+today.getMonth()+1 : today.getMonth()+1; // January is 0!
 let yyyy = today.getFullYear();
 
 let disasters = {
@@ -16,13 +16,6 @@ let disasters = {
     }
 };
 
-if(dd < 10) {
-    dd = '0' + dd;
-}
-
-if(mm < 10) {
-    mm = '0' + mm;
-}
 const curDisasterUrl = "http://localhost:3000/curdata";
 // const newsUrl = "http://localhost:3000/news";
 
