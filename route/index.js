@@ -18,6 +18,14 @@ function findPastData(state, county) {
     });
 }
 
+function findPastDataByState(state) {
+    request(`https://www.fema.gov/api/open/v1/DisasterDeclarationsSummaries?$filter=state%20eq%20%27${state}%27`, function (error, response, body) {
+        console.log('error:', error); // Print the error if one occurred
+        console.log('statusCode:', response && response.statusCode); // Print the response status code if a response was received
+        console.log('body:', JSON.parse(body)); // Print the HTML for the Google homepage.
+    });
+}
+
 // findPastData('NE', 'Pawnee');
 
 function findRecentData(radius, latlong, endDate, startDate) {
