@@ -3,6 +3,7 @@
 let map;
 let lastLat = 0;
 let lastLng = 0;
+let newsCounter = 1;
 let today = new Date();
 let curMarker = {};
 let markers = {
@@ -200,6 +201,17 @@ function addMarker(lat, lng, title, disaster) {
         xhr.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) {
                 let data = JSON.parse(xhr.responseText);
+                while (newsCounter > 1) {
+                    removeItems(newsCounter);
+                    newsCounter--;
+                }
+                newsCounter++;
+
+                data.forEach((newsArticle) => {
+                    addItem(newsArticle.title, newsArticle.url, newsArticle.img, newsCounter);
+                    newsCounter++;
+                });
+                newsCounter--;
             }
         };
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -288,3 +300,31 @@ function toggleIcons(disaster) {
 //         }
 //     }
 // }
+
+function addItem(title, url, img, id){
+    let ul = document.getElementById("media-list");
+    let li = document.createElement("li");
+    let imgEle = document.createElement("img");
+    let div = document.createElement("div");
+    let anchor = document.createElement('a');
+    let header = document.createElement("h5");
+    anchor.setAttribute('href', url);
+    imgEle.setAttribute('class', 'mr3');
+    imgEle.setAttribute('src', img);
+    div.setAttribute('class', 'media-body');
+    header.setAttribute('class', 'mt-0 mb-1');
+    header.appendChild(document.createTextNode(title));
+    anchor.appendChild(imgEle);
+    li.setAttribute('class','media');
+    li.setAttribute('id', `doc${id}`);
+    div.appendChild(header);
+    li.appendChild(anchor);
+    li.appendChild(div);
+    ul.appendChild(li);
+}
+
+function removeItems(id) {
+    // document.getElementById("media-list").removeChild()
+    console.log(id);
+    document.getElementById(`doc${id}`).parentNode.removeChild(document.getElementById(`doc${id}`));
+}
