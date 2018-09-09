@@ -1,19 +1,19 @@
 # Pennapps-Resiliency
 
-#### NPM
+#### Installation
 
-```
-npm does not support Node.js v10.1.0
-```
-
-Work around with [nvm](https://github.com/creationix/nvm/issues/576) (using different versions of node) for a downgraded node
-
-```
-$ nvm install v8.9.0
-```
-
-#### express
+install: ```$ npm install```
 
 development: ```$ npm run dev```
 
 start: ```$ npm start```
+
+#### Description
+
+DAASH is a web app that provides useful disaster information in a user-friendly way. It pulls disaster data from FEMA and overlays it with news to give the user helpful insights into disasters happening around them. DAASH helps you find the current disasters occurring in different parts of the world and understand your home using reliable data.
+
+#### Usage
+
+We used Node.js for the backend, using APIs from FEMA, NewsAPI, and PredictHQ. We used a combination of JavaScript, HTML, and CSS to craft the frontend.
+
+#### Display
