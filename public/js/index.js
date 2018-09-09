@@ -17,6 +17,9 @@ let dd = (today.getDate() < 10) ? '0'+today.getDate() : today.getDate();
 let mm = (today.getMonth() < 10) ? '0'+ (today.getMonth() + 1) : today.getMonth() + 1; // January is 0!
 let yyyy = today.getFullYear();
 
+let current = 0,
+    window_height = $(window).height();
+
 let disasters = {
     Flood: {
         // color: '#6ACBFF',
@@ -225,6 +228,7 @@ function addMarker(lat, lng, title, disaster) {
                 }
                 newsCounter++;
 
+                console.log(data);
                 data.forEach((newsArticle) => {
                     addItem(newsArticle.title, newsArticle.url, newsArticle.img, newsCounter);
                     newsCounter++;
@@ -306,6 +310,7 @@ function toggleIcons(disaster) {
         }
     }
 }
+
 // /// gif
 // function findGif(weatherType) { //doesn't work yet
 //     var gifString = "http://api.giphy.com/v1/stickers/random?api_key=9NhVNvR04acYobvWGIGoiY5B9pla2JZV&tag=" + weatherType;
@@ -320,25 +325,36 @@ function toggleIcons(disaster) {
 // }
 
 function addItem(title, url, img, id){
-    let ul = document.getElementById("media-list");
-    let li = document.createElement("li");
-    let imgEle = document.createElement("img");
-    let div = document.createElement("div");
-    let anchor = document.createElement('a');
-    let header = document.createElement("h5");
-    anchor.setAttribute('href', url);
-    imgEle.setAttribute('class', 'mr3');
-    imgEle.setAttribute('src', img);
-    div.setAttribute('class', 'media-body');
-    header.setAttribute('class', 'mt-0 mb-1');
-    header.appendChild(document.createTextNode(title));
-    anchor.appendChild(imgEle);
-    li.setAttribute('class','media');
-    li.setAttribute('id', `doc${id}`);
-    div.appendChild(header);
-    li.appendChild(anchor);
-    li.appendChild(div);
-    ul.appendChild(li);
+    // if (!($("#media-list").height() < 0.7 * window_height)) return;
+
+    var news = "<li class=\"media\" id=" + id + ">" +
+                "<a href=\"" + url + "\">" +
+                "<img class=\"mr3\" src=\"" + img + "\">" +
+                "</a>" +
+                "<div class=\"media-body\"> " +
+                title +
+                "</div>";
+    $(news).appendTo("#media-list");
+
+    // let ul = document.getElementById("media-list");
+    // let li = document.createElement("li");
+    // let imgEle = document.createElement("img");
+    // let div = document.createElement("div");
+    // let anchor = document.createElement('a');
+    // let header = document.createElement("h5");
+    // anchor.setAttribute('href', url);
+    // imgEle.setAttribute('class', 'mr3');
+    // imgEle.setAttribute('src', img);
+    // div.setAttribute('class', 'media-body');
+    // header.setAttribute('class', 'mt-0 mb-1');
+    // header.appendChild(document.createTextNode(title));
+    // anchor.appendChild(imgEle);
+    // li.setAttribute('class','media');
+    // li.setAttribute('id', `doc${id}`);
+    // div.appendChild(header);
+    // li.appendChild(anchor);
+    // li.appendChild(div);
+    // ul.appendChild(li);
 }
 
 function removeItems(id) {
