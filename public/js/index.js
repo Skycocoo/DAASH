@@ -221,22 +221,24 @@ function addMarker(lat, lng, title, disaster) {
         xhr.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) {
                 let data = JSON.parse(xhr.responseText);
-                while (newsCounter > 1) {
-                    removeItems(newsCounter);
-                    newsCounter--;
-                }
-                newsCounter++;
+                $("#media-list").empty();
+                // while (newsCounter > 1) {
+                //     removeItems(newsCounter);
+                //     newsCounter--;
+                // }
+                // newsCounter++;
 
                 console.log(data);
                 data.forEach((newsArticle) => {
-                    addItem(newsArticle.title, newsArticle.url, newsArticle.img, newsCounter);
-                    newsCounter++;
+                    addItem(newsArticle.title, newsArticle.url, newsArticle.img);
+                    // newsCounter++;
                 });
-                newsCounter--;
+                // newsCounter--;
             }
         };
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.send(JSON.stringify(request));
+
         // if(document.getElementById("map").getAttribute('class')=="col-9"){
         //     document.getElementById("map").setAttribute('class', 'col-12');
         //     document.getElementById("news").style.display="none";
@@ -331,10 +333,10 @@ function toggleIcons(disaster) {
 //     }
 // }
 
-function addItem(title, url, img, id){
+function addItem(title, url, img){
     // if (!($("#media-list").height() < 0.7 * window_height)) return;
 
-    var news = "<li class=\"media\" id=" + id + ">" +
+    var news = "<li class=\"media\"" + ">" +
                 "<a href=\"" + url + "\">" +
                 "<img class=\"mr3\" src=\"" + img + "\">" +
                 "</a>" +
@@ -364,22 +366,12 @@ function addItem(title, url, img, id){
     // ul.appendChild(li);
 }
 
-function removeItems(id) {
-    // document.getElementById("media-list").removeChild()
-    console.log(id);
-    document.getElementById(`doc${id}`).parentNode.removeChild(document.getElementById(`doc${id}`));
-}
-
 function toggleOverlay() {
     let checked = $('#overlayCheck').is(":checked");
-
     if (!checked) {
         map.data.setStyle({visible: false});
-
     }
     else {
         map.data.setStyle(styleFeature);
-        // loadMapShapes();
     }
-
 }
