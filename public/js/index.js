@@ -237,14 +237,14 @@ function addMarker(lat, lng, title, disaster) {
         };
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.send(JSON.stringify(request));
-        if(document.getElementById("map").getAttribute('class')=="col-9"){
-            document.getElementById("map").setAttribute('class', 'col-12');
-            document.getElementById("news").style.display="none";
-        }
-        else{
-            document.getElementById("map").setAttribute('class', 'col-9');
-            document.getElementById("news").style.display="inline";
-        }
+        // if(document.getElementById("map").getAttribute('class')=="col-9"){
+        //     document.getElementById("map").setAttribute('class', 'col-12');
+        //     document.getElementById("news").style.display="none";
+        // }
+        // else{
+        //     document.getElementById("map").setAttribute('class', 'col-9');
+        //     document.getElementById("news").style.display="inline";
+        // }
     })
 }
 

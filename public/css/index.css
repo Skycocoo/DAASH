@@ -55,6 +55,12 @@ td {
     overflow-y: scroll;
 }
 
+#maps-news {
+    height: 100%;
+    width: 100%;
+    /* margin: 0; */
+    padding: 0;
+}
 
 .slider-container {
     display: block;
@@ -92,12 +98,4 @@ td {
 
 .mr3 {
     width: 75px;
-}
-
-
-#maps-news {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    padding: 0;
 }
