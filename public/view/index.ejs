@@ -16,7 +16,10 @@
 
     <!-- get data from backend -->
     <!-- https://stackoverflow.com/questions/16098397/pass-variables-to-javascript-in-expressjs -->
-    <script> let pastData = <%- JSON.stringify(data) %>; </script>
+    <script>
+        let pastData = <%- JSON.stringify(data) %>;
+        let total = <%- total %>;
+    </script>
 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#"> Our Proj Name </a>

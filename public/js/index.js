@@ -36,10 +36,11 @@ function initMap() {
     directionsService = new google.maps.DirectionsService();
     directionsDisplay = new google.maps.DirectionsRenderer();
     map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 34.397, lng: -80},
-        zoom: 8
+        center: {lat: 38.5695040941581, lng: -93.81375094516613},
+        zoom: 4,
     });
 
+    // styling by the past data
     map.data.setStyle(styleFeature);
     loadMapShapes();
 
@@ -74,7 +75,6 @@ function initMap() {
     google.maps.event.addListener(map, "dragend", function () {
         let lat = map.data.map.center.lat();
         let lng = map.data.map.center.lng();
-
         if (lastLat === 0 && lastLng === 0 || calcCrow(lat, lng) >= 8) {
             lastLat = lat;
             lastLng = lng;
@@ -205,13 +205,16 @@ function loadMapShapes() {
 }
 
 function styleFeature(feature) {
-    var low = [5, 69, 54];  // color of smallest datum
-    var high = [151, 83, 34];   // color of largest datum
+    let severity = pastData[feature.f.NAME] / total * 25;
+    if (isNaN(severity)) severity = 0;
+
+    var high = [5, 69, 54];  // color of smallest datum
+    var low = [151, 83, 34];   // color of largest datum
 
     var color = [];
     for (var i = 0; i < 3; i++) {
         // calculate an integer color based on the delta
-        color[i] = (high[i] - low[i]) * Math.random() + low[i];
+        color[i] = (high[i] - low[i]) * severity + low[i];
     }
     var outlineWeight = 0.5, zIndex = 1;
     return {

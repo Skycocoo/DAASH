@@ -163,32 +163,20 @@ function insertPastFirebase() {
         { name: 'Wyoming', abbrev: 'WY' }
     ];
     const initial = states.map(i => i.abbrev);
+    const stateName = states.map(i => i.name);
 
     for (let i = 0; i < initial.length; i++) {
         db.collection('states').add({
-            name: initial[i],
+            initial: initial[i],
+            name: stateName[i],
         }).then(doc => {
             console.log("Stroed to: ", doc.id);
             findPastDataByState(initial[i], (err, body) => {
                 if (err) throw err;
                 let result = 0;
-
                 for (let i = 0; i < body.DisasterDeclarationsSummaries.length; i++) {
-                    let name = body.DisasterDeclarationsSummaries[i].declaredCountyArea.split(" ");
-                    if (name.length == 0) {
-                        console.log(pass);
-                        continue;
-                    }
-                    if (name.length > 1) name.splice(-1, 1);
-                    name.join(" ");
                     result += body.DisasterDeclarationsSummaries[i].disasterNumber;
-                    doc.collection('counties').add({
-                        name: name[0],
-                        num: body.DisasterDeclarationsSummaries[i].disasterNumber,
-                        type: body.DisasterDeclarationsSummaries[i].incidentType,
-                    });
                 }
-                console.log(result);
                 let docRef = db.collection('states').doc(doc.id);
                 // wait for ~ 1min for one update per state
                 docRef.set({ sum: result }, { merge: true })
@@ -200,11 +188,12 @@ function insertPastFirebase() {
 }
 
 function fetchPast(callback) {
-    let data = {};
+    let data = {}, total = 0;
     db.collection('states')
         .get()
         .then(query => {
             query.forEach(doc => {
+                total += doc.data().sum;
                 data[doc.data().name] = doc.data().sum;
                 // // cannot query for that many documents
                 // let docRef = db.collection('states').doc(doc.id);
@@ -217,9 +206,9 @@ function fetchPast(callback) {
                 //     })
                 //     .catch(err => { console.log(err); });
             });
-            callback(null, data);
+            callback(null, data, total);
         })
-        .catch(err => { callback(err, null); });
+        .catch(err => { callback(err, null, null); });
 }
 
 
@@ -231,12 +220,9 @@ module.exports = () => {
 
     router.get('/', (req, res, next) => {
         // res.render('index');
-        fetchPast((err, data) => {
+        fetchPast((err, data, total) => {
             if (err) console.log(err);
-            console.log(data);
-            // res.send(data);
-            res.render('index', { data: data });
-            // res.end();
+            res.render('index', { data: data, total: total });
         });
     });
 
