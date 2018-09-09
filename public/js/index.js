@@ -49,8 +49,7 @@ let disasters = {
 };
 
 
-const curDisasterUrl = "http://localhost:3000/curdata";
-// const newsUrl = "http://localhost:3000/news";
+const curDisasterUrl = "/curdata";
 
 let directionsService;
 let directionsDisplay;
