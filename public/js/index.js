@@ -19,7 +19,12 @@ let disasters = {
     Fire: {
         color: '#ff312c',
         radius: 8000,
-        icon: '/img/fire.png'
+        icon: '/img/firenew.png'
+    },
+    Hurricane: {
+        color: '#656565',
+        radius: 10000,
+        icon: '/img/hurricaneclip.png'
     }
 };
 
@@ -119,32 +124,35 @@ function calcRoute() {
 
 function addMarker(lat, lng, title, disaster) {
     let uluru = {lat, lng};
-    // if (disasters[disaster].icon !== undefined) {
-    //     let image = {
-    //         url: disasters[disaster].icon,
-    //         size: new google.maps.Size(50, 50),
-    //         origin: new google.maps.Point(0, 0),
-    //         anchor: new google.maps.Point(0, 32),
-    //         scaledSize: new google.maps.Size(40, 40)
-    //     };
-    //
-    //     let marker = new google.maps.Marker({
-    //         position: uluru,
-    //         title,
-    //         icon: image,
-    //         map: map
-    //     });
-    // } else {
-    //
-    // }
+    let marker;
+    if (disasters[disaster].icon !== undefined) {
+        let image = {
+            url: disasters[disaster].icon,
+            size: new google.maps.Size(50, 50),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(0, 32),
+            scaledSize: new google.maps.Size(40, 40)
+        };
 
+        marker = new google.maps.Marker({
+            position: uluru,
+            title,
+            icon: image,
+            map: map
+        });
+    } else {
+         marker = new google.maps.Marker({
+            position: uluru,
+            title,
+            map: map
+        });
+    }
 
-    let marker = new google.maps.Marker({
-        position: uluru,
-        title,
-        map: map
-    });
-
+    // marker = new google.maps.Marker({
+    //     position: uluru,
+    //     title,
+    //     map: map
+    // });
     let circle  = new google.maps.Circle({
         strokeColor: (disasters[disaster]  === undefined) ? '#8d8d8d' : disasters[disaster].color,
         strokeOpacity: 0.8,
