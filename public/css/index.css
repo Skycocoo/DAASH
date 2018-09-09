@@ -13,7 +13,36 @@ html, body {
     height: 80%;
 }
 
-/*.modal-dialog {*/
-    /*position: fixed;*/
-    /*right: 40px;*/
-/*}*/
+.slider-container {
+    display: block;
+    position: relative;
+    margin-top: 50px;
+    margin-bottom: -10px;
+
+    height: 30px;
+    width: 100%;
+    line-height: 30px;
+    text-align: center;
+
+    background-color: #fff;
+}
+
+.slider-container #less, .slider-container #more {
+    display: inline-block;
+    line-height: 30px;
+}
+
+#slider {
+    display: inline-block;
+    width: 25%;
+    height: 10px;
+    line-height: 30px;
+    background: linear-gradient(to left,
+            hsl(5, 69%, 54%) 0%,
+            hsl(29, 71%, 51%) 17%,
+            hsl(54, 74%, 47%) 33%,
+            hsl(78, 76%, 44%) 50%,
+            hsl(102, 78%, 41%) 67%,
+            hsl(127, 81%, 37%) 83%,
+            hsl(151, 83%, 34%) 100%);
+}
