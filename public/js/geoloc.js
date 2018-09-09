@@ -34,10 +34,4 @@ function getGeolocation(){
     }
 }
 
-function askForCoordinates(){
-    if(getGeolocation()){
-        //need to set center of map to lat and long for initMap
-    }
-}
-
-askForCoordinates();
+getGeolocation();

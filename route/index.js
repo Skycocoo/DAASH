@@ -181,7 +181,7 @@ function insertPastFirebase() {
                 // wait for ~ 1min for one update per state
                 docRef.set({ sum: result }, { merge: true })
                     .then(() => {console.log("Success");})
-                    .catch(err => {console.log("Error: ", err);});;
+                    .catch(err => {console.log("Error: ", err);});
             });
         }).catch(err => {console.log(err);});
     }
