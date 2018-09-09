@@ -42,19 +42,15 @@ let directionsDisplay;
 function initMap(coordinates) {
     directionsService = new google.maps.DirectionsService();
     directionsDisplay = new google.maps.DirectionsRenderer();
-    if (!coordinates) {
-        map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: 34.397, lng: -80},
-            zoom: 8
-        });
-    } else {
-        let latitude=coordinates.coords.latitude;
-        let longitude=coordinates.coords.longitude;
-        map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: latitude, lng: longitude},
-            zoom: 8
-        });
-    }
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: {lat: 38.5695040941581, lng: -93.81375094516613},
+        zoom: 4,
+    });
+
+    // styling by the past data
+    map.data.setStyle(styleFeature);
+    loadMapShapes();
+
 
     let request = {
         date: `${yyyy}-${mm}-${dd}`
@@ -86,7 +82,6 @@ function initMap(coordinates) {
     google.maps.event.addListener(map, "dragend", function () {
         let lat = map.data.map.center.lat();
         let lng = map.data.map.center.lng();
-
         if (lastLat === 0 && lastLng === 0 || calcCrow(lat, lng) >= 8) {
             lastLat = lat;
             lastLng = lng;
@@ -211,20 +206,53 @@ function toRad(Value) {
     return Value * Math.PI / 180;
 }
 
-// function findGif(weatherType, callback) { //doesn't work yet
-//     let gifString = "https://cors-anywhere.herokuapp.com/http://api.giphy.com/v1/stickers/random?api_key=9NhVNvR04acYobvWGIGoiY5B9pla2JZV&tag=" + weatherType;
-//     xhr = new XMLHttpRequest();
+
+/** Loads the state boundary polygons from a GeoJSON source. */
+function loadMapShapes() {
+  // load US state outline polygons from a GeoJson file
+  map.data.loadGeoJson('https://storage.googleapis.com/mapsdevsite/json/states.js', { idPropertyName: 'STATE' });
+
+  // wait for the request to complete by listening for the first feature to be
+  // added
+  google.maps.event.addListenerOnce(map.data, 'addfeature', function() {
+    google.maps.event.trigger(document.getElementById('census-variable'),
+        'change');
+  });
+}
+
+function styleFeature(feature) {
+    let severity = pastData[feature.f.NAME] / total * 25;
+    if (isNaN(severity)) severity = 0;
+
+    var high = [5, 69, 54];  // color of smallest datum
+    var low = [151, 83, 34];   // color of largest datum
+
+    var color = [];
+    for (var i = 0; i < 3; i++) {
+        // calculate an integer color based on the delta
+        color[i] = (high[i] - low[i]) * severity + low[i];
+    }
+    var outlineWeight = 0.5, zIndex = 1;
+    return {
+        strokeWeight: outlineWeight,
+        strokeColor: '#fff',
+        zIndex: zIndex,
+        fillColor: 'hsl(' + color[0] + ',' + color[1] + '%,' + color[2] + '%)',
+        fillOpacity: 0.75,
+        visible: true
+    };
+}
+
+
+// /// gif
+// function findGif(weatherType) { //doesn't work yet
+//     var gifString = "http://api.giphy.com/v1/stickers/random?api_key=9NhVNvR04acYobvWGIGoiY5B9pla2JZV&tag=" + weatherType;
 //     xhr.open("GET", gifString);
 //     xhr.send();
 //     xhr.onreadystatechange = function () {
-//         if (this.readyState === 4 && this.status === 200) {
-//             let data = JSON.parse(xhr.responseText);
-//             // console.log(data);
-//             return data.data.images.downsized.url;//public url to gif < 2 MB
+//         if (this.readyState == 4 && this.status == 200) {
+//             var data = xhr.responseText;
+//             return data.data[0].images.downsized.url;//public url to gif < 2 MB
 //         }
 //     }
 // }
-//
-// findGif("Fire", (url) => {
-//     console.log(url);
-// });

@@ -5,7 +5,6 @@ const app = require('../app');
 
 const debug = require('debug')('resilient:server');
 const http = require('http');
-const mongoose = require('mongoose');
 
 // normalize a port into a number, string, or false.
 function normalizePort(val) {
