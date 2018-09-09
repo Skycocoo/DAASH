@@ -43,15 +43,22 @@ function findDisaster(date, callback) {
     });
 }
 
-// findPastDataByState('NE');
-
-function findRecentData(radius, lat, lng, endDate, startDate) {
-    client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${lat},${lng}`,
-        'end.lte': endDate, 'start.gte': startDate})
+function findDynamicDisaster(radius, lat, lng,  activeDate, callback) {
+    let data = [];
+    client.events.search({category: 'disasters, severe-weather', within: `${radius}km@${lat},${lng}`, 'active.gte': activeDate})
         .then((results)=>{
             for (let event of results) {
-                // console.log(event.title);
+                let markerInfo = {
+                    title: event.title,
+                    desc: event.description,
+                    lat: event.location[1],
+                    lng: event.location[0],
+                    type: event.labels[0].charAt(0).toUpperCase() + event.labels[0].substr(1)
+                };
+
+                data.push(markerInfo);
             }
+            callback(data);
         });
 }
 
@@ -79,11 +86,6 @@ function findNews(topic, type, callback) {
     });
 }
 
-// findNews("ramsey canyon fire", "fire", (news) => {
-//     console.log(news);
-// });
-
-// firebase
 
 function initFirebase () {
     firebase.initializeApp({
@@ -240,7 +242,7 @@ module.exports = () => {
     });
 
     router.post('/curdata', (req, res, next) => {
-        findDisaster(req.body.date, (data) => {
+        findDynamicDisaster(req.body.radius, req.body.lat, req.body.lng, req.body.date, (data) => {
             res.send(data);
         });
     });

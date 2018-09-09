@@ -21,7 +21,7 @@ let disasters = {
     Flood: {
         // color: '#6ACBFF',
         // radius: 7000,
-        icon: '/img/lightning2u.png'
+        icon: '/img/water.svg'
     },
     Fire: {
         // color: '#ff312c',
@@ -61,7 +61,7 @@ function initMap() {
     });
 
     // styling by the past data
-    map.data.setStyle(styleFeature);
+    let feature = map.data.setStyle(styleFeature);
     loadMapShapes();
 
 
@@ -108,6 +108,24 @@ function initMap() {
         if (lastLat === 0 && lastLng === 0 || calcCrow(lat, lng) >= 8) {
             lastLat = lat;
             lastLng = lng;
+            let request = {
+                radius: 20,
+                lat,
+                lng,
+                date: `${yyyy}-${mm}-${dd}`
+            };
+
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', curDisasterUrl, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    JSON.parse(xhr.response).forEach((event) => {
+                        addMarker(event.lat, event.lng, event.title, event.type);
+                    });
+                }
+            };
+            xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhr.send(JSON.stringify(request));
         }
     });
     directionsDisplay.setMap(map);
