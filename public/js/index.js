@@ -104,7 +104,7 @@ function initMap() {
     google.maps.event.addListener(map, "dragend", function () {
         let lat = map.data.map.center.lat();
         let lng = map.data.map.center.lng();
-        if (lastLat === 0 && lastLng === 0 || calcCrow(lat, lng) >= 8) {
+        if (lastLat === 0 && lastLng === 0 || calcCrow(lat, lng, lastLat, lastLng) >= 8) {
             lastLat = lat;
             lastLng = lng;
             let request = {
@@ -133,21 +133,31 @@ function initMap() {
 function calcRoute() {
     let uluru = {};
     let xhr = new XMLHttpRequest();
-    const url = `https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/textsearch/json?location=${lastLat},${lastLng}&radius=1500&query=Red%20Cross&key=AIzaSyC7ykUUPTmMCeAfmSTnbk0f0cHnYbojaII`;
+    const url = `https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/place/textsearch/json?location=${curMarker.lat},${curMarker.lng}&radius=1500&query=Red%20Cross&key=AIzaSyC7ykUUPTmMCeAfmSTnbk0f0cHnYbojaII`;
     xhr.open('GET', url, true);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
-            uluru.lat = JSON.parse(xhr.responseText).results[0].geometry.location.lat;
-            uluru.lng = JSON.parse(xhr.responseText).results[0].geometry.location.lng;
-
-            let request = {
-                origin: {lat: curMarker.lat, lng: curMarker.lng},
-                destination: uluru,
-                travelMode: "DRIVING"
-            };
-            directionsService.route(request, function(response, status) {
-                if (status === 'OK') {
-                    directionsDisplay.setDirections(response);
+            let shortest = 1000000000;
+            let ctr = 0;
+            JSON.parse(xhr.responseText).results.forEach((addr) => {
+                let dist = calcCrow(curMarker.lat, curMarker.lng, addr.geometry.location.lat, addr.geometry.location.lng);
+                if (dist < shortest) {
+                    shortest = dist;
+                    uluru.lat = addr.geometry.location.lat;
+                    uluru.lng = addr.geometry.location.lng;
+                }
+                ctr++;
+                if (ctr === JSON.parse(xhr.responseText).results.length) {
+                    let request = {
+                        origin: {lat: curMarker.lat, lng: curMarker.lng},
+                        destination: uluru,
+                        travelMode: "DRIVING"
+                    };
+                    directionsService.route(request, function(response, status) {
+                        if (status === 'OK') {
+                            directionsDisplay.setDirections(response);
+                        }
+                    });
                 }
             });
         }
@@ -244,9 +254,7 @@ function addMarker(lat, lng, title, disaster) {
     })
 }
 
-function calcCrow(lat1, lon1) {
-    let lat2 = lastLat;
-    let lon2 = lastLng;
+function calcCrow(lat1, lon1, lat2, lon2) {
     let R = 6371;
     let dLat = toRad(lat2 - lat1);
     let dLon = toRad(lon2 - lon1);
@@ -350,7 +358,6 @@ function addItem(title, url, img, id){
 
 function removeItems(id) {
     // document.getElementById("media-list").removeChild()
-    console.log(id);
     document.getElementById(`doc${id}`).parentNode.removeChild(document.getElementById(`doc${id}`));
 }
 
