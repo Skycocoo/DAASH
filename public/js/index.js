@@ -67,7 +67,6 @@ function initMap() {
     let feature = map.data.setStyle(styleFeature);
     loadMapShapes();
 
-
     curData.forEach((event) => {
         let xhr2 = new XMLHttpRequest();
         xhr2.open('GET', `https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/geocode/json?components=administrative_area:${event.state}|administrative_area:${event.county}&key=AIzaSyC7ykUUPTmMCeAfmSTnbk0f0cHnYbojaII`, true);
@@ -238,6 +237,14 @@ function addMarker(lat, lng, title, disaster) {
         };
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.send(JSON.stringify(request));
+        if(document.getElementById("map").getAttribute('class')=="col-9"){
+            document.getElementById("map").setAttribute('class', 'col-12');
+            document.getElementById("news").style.display="none";
+        }
+        else{
+            document.getElementById("map").setAttribute('class', 'col-9');
+            document.getElementById("news").style.display="inline";
+        }
     })
 }
 
@@ -361,4 +368,18 @@ function removeItems(id) {
     // document.getElementById("media-list").removeChild()
     console.log(id);
     document.getElementById(`doc${id}`).parentNode.removeChild(document.getElementById(`doc${id}`));
+}
+
+function toggleOverlay() {
+    let checked = $('#overlayCheck').is(":checked");
+
+    if (!checked) {
+        map.data.setStyle({visible: false});
+
+    }
+    else {
+        map.data.setStyle(styleFeature);
+        // loadMapShapes();
+    }
+
 }
