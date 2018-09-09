@@ -355,8 +355,15 @@ function removeItems(id) {
 }
 
 function toggleOverlay() {
-    let toToggle = !document.getElementById("overlayCheck").getAttribute("value");
-    if (!toToggle) map.data.setStyle({visible: toToggle});
-    else map.data.setStyle(styleFeature);
-    document.getElementById("overlayCheck").setAttribute("value", toToggle);
+    let checked = $('#overlayCheck').is(":checked");
+
+    if (!checked) {
+        map.data.setStyle({visible: false});
+
+    }
+    else {
+        map.data.setStyle(styleFeature);
+        // loadMapShapes();
+    }
+
 }
