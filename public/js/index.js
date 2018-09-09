@@ -305,6 +305,6 @@ function toggleOverlay() {
 
 $('#downButton').click(function() {
     $('html,body').animate({
-            scrollTop: $("#map").offset().top},
+            scrollTop: $("#sliderelement").offset().top},
         'slow');
 });
