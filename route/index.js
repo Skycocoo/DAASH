@@ -25,7 +25,7 @@ function findPastDataByState(state, callback) {
 function findDisaster(date, callback) {
     let data = [];
     request(`https://www.fema.gov/api/open/v1/DisasterDeclarationsSummaries?$filter=declarationDate%20gt%20%27${date}T04:00:00.000z%27`, function (error, response, body) {
-        if (error) callback(error, []);
+        if (error) callback(error, null);
 
         JSON.parse(body).DisasterDeclarationsSummaries.forEach((disaster) => {
             if (disaster.incidentEndDate === undefined) {
@@ -39,7 +39,7 @@ function findDisaster(date, callback) {
                 data.push(markerInfo);
             }
         });
-        callback(data);
+        callback(null, data);
     });
 }
 
@@ -50,7 +50,7 @@ function findRecentData(radius, lat, lng, endDate, startDate) {
         'end.lte': endDate, 'start.gte': startDate})
         .then((results)=>{
             for (let event of results) {
-                console.log(event.title);
+                // console.log(event.title);
             }
         });
 }
@@ -78,9 +78,10 @@ function findNews(topic, type, callback) {
         callback(news);
     });
 }
-findNews("ramsey canyon fire", "fire", (news) => {
-    console.log(news);
-});
+
+// findNews("ramsey canyon fire", "fire", (news) => {
+//     console.log(news);
+// });
 
 // firebase
 
@@ -217,9 +218,24 @@ module.exports = () => {
 
     router.get('/', (req, res, next) => {
         // res.render('index');
-        fetchPast((err, data, total) => {
+        fetchPast((err, past, total) => {
             if (err) console.log(err);
-            res.render('index', { data: data, total: total });
+
+            let today = new Date();
+            let dd = (today.getDate() < 10) ? '0'+today.getDate() : today.getDate();
+            let mm = (today.getMonth() < 10) ? '0'+ (today.getMonth() - 1) : today.getMonth() - 1; // January is 0!
+            let yyyy = today.getFullYear();
+            // recent 1 month
+            if (mm <= 0) {
+                mm = mm + 11;
+                yyyy -= 1;
+            }
+            let date = `${yyyy}-${mm}-${dd}`;
+
+            findDisaster(date, (err, cur) => {
+                if (err) console.log(err);
+                res.render('index', { past: past, total: total, cur: cur });
+            });
         });
     });
 

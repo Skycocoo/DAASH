@@ -17,7 +17,8 @@
     <!-- get data from backend -->
     <!-- https://stackoverflow.com/questions/16098397/pass-variables-to-javascript-in-expressjs -->
     <script>
-        let pastData = <%- JSON.stringify(data) %>;
+        let pastData = <%- JSON.stringify(past) %>;
+        let curData = <%- JSON.stringify(cur) %>;
         let total = <%- total %>;
     </script>
 
@@ -56,12 +57,32 @@
         </div>
     </div>
 
-
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" value="" checked="checked" id="fireCheck" onclick="toggleIcons('Fire')">
+        <label class="form-check-label" for="fireCheck">Fire</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" value="" checked="checked" id="hurricaneCheck" onclick="toggleIcons('Hurricane')">
+        <label class="form-check-label" for="hurricaneCheck">Hurricane</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" value="" checked="checked" id="tornadoCheck" onclick="toggleIcons('Tornado')">
+        <label class="form-check-label" for="tornadoCheck">Tornado</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" value="" checked="checked" id="floodCheck" onclick="toggleIcons('Flood')">
+        <label class="form-check-label" for="floodCheck">Flood</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" value="" checked="checked" id="volcanoCheck" onclick="toggleIcons('Volcano')">
+        <label class="form-check-label" for="volcanoCheck">Volcano</label>
+    </div>
     <div class="slider-container">
         <div id="less"> less severe </div>
         <div id="slider"></div>
         <div id="more"> more severe </div>
     </div>
+
 
     <div id="map"></div>
 
