@@ -37,13 +37,12 @@ let directionsDisplay;
 function initMap(coordinates) {
     directionsService = new google.maps.DirectionsService();
     directionsDisplay = new google.maps.DirectionsRenderer();
-    if (coordinates==null) {
+    if (!coordinates) {
         map = new google.maps.Map(document.getElementById('map'), {
             center: {lat: 34.397, lng: -80},
             zoom: 8
         });
-    }
-    else{
+    } else {
         let latitude=coordinates.coords.latitude;
         let longitude=coordinates.coords.longitude;
         map = new google.maps.Map(document.getElementById('map'), {
@@ -139,6 +138,7 @@ function addMarker(lat, lng, title, disaster) {
     //
     // }
 
+
     let marker = new google.maps.Marker({
         position: uluru,
         title,
@@ -164,28 +164,21 @@ function addMarker(lat, lng, title, disaster) {
         map.setCenter(uluru);
         map.setZoom(11);
         curMarker = uluru;
-    })
-}
 
-function addCustomMarker() {
-    let icons = {
-        lightning: {
-
-        }
-    };
-
-
-
-    let uluru = {lat: 39.9526, lng: -75.1652};
-    let marker = new google.maps.Marker({
-        position: uluru,
-        icon: image,
-        title: "Lightning",
-        map: map
-    });
-
-    marker.addListener('click', function() {
-        alert("LIGHTNING");
+        let request = {
+            topic: title,
+            type: disaster
+        };
+        xhr = new XMLHttpRequest();
+        xhr.open("POST", 'http://localhost:3000/news');
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                let data = JSON.parse(xhr.responseText);
+                console.log(data);
+            }
+        };
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.send(JSON.stringify(request));
     })
 }
 
@@ -210,14 +203,20 @@ function toRad(Value) {
     return Value * Math.PI / 180;
 }
 
-function findGif(weatherType) { //doesn't work yet
-    var gifString = "http://api.giphy.com/v1/stickers/random?api_key=9NhVNvR04acYobvWGIGoiY5B9pla2JZV&tag=" + weatherType;
-    xhr.open("GET", gifString);
-    xhr.send();
-    xhr.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            var data = xhr.responseText;
-            return data.data[0].images.downsized.url;//public url to gif < 2 MB
-        }
-    }
-}
+// function findGif(weatherType, callback) { //doesn't work yet
+//     let gifString = "https://cors-anywhere.herokuapp.com/http://api.giphy.com/v1/stickers/random?api_key=9NhVNvR04acYobvWGIGoiY5B9pla2JZV&tag=" + weatherType;
+//     xhr = new XMLHttpRequest();
+//     xhr.open("GET", gifString);
+//     xhr.send();
+//     xhr.onreadystatechange = function () {
+//         if (this.readyState === 4 && this.status === 200) {
+//             let data = JSON.parse(xhr.responseText);
+//             // console.log(data);
+//             return data.data.images.downsized.url;//public url to gif < 2 MB
+//         }
+//     }
+// }
+//
+// findGif("Fire", (url) => {
+//     console.log(url);
+// });
