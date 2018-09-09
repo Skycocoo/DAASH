@@ -40,6 +40,10 @@ function initMap() {
         zoom: 8
     });
 
+    map.data.setStyle(styleFeature);
+    loadMapShapes();
+
+
     let request = {
         date: `${yyyy}-${mm}-${dd}`
     };
@@ -184,6 +188,47 @@ function calcCrow(lat1, lon1) {
 function toRad(Value) {
     return Value * Math.PI / 180;
 }
+
+
+
+/** Loads the state boundary polygons from a GeoJSON source. */
+function loadMapShapes() {
+  // load US state outline polygons from a GeoJson file
+  map.data.loadGeoJson('https://storage.googleapis.com/mapsdevsite/json/states.js', { idPropertyName: 'STATE' });
+
+  // wait for the request to complete by listening for the first feature to be
+  // added
+  google.maps.event.addListenerOnce(map.data, 'addfeature', function() {
+    google.maps.event.trigger(document.getElementById('census-variable'),
+        'change');
+  });
+}
+
+function styleFeature(feature) {
+    var low = [5, 69, 54];  // color of smallest datum
+    var high = [151, 83, 34];   // color of largest datum
+
+    var color = [];
+    for (var i = 0; i < 3; i++) {
+        // calculate an integer color based on the delta
+        color[i] = (high[i] - low[i]) * Math.random() + low[i];
+    }
+    var outlineWeight = 0.5, zIndex = 1;
+    return {
+        strokeWeight: outlineWeight,
+        strokeColor: '#fff',
+        zIndex: zIndex,
+        fillColor: 'hsl(' + color[0] + ',' + color[1] + '%,' + color[2] + '%)',
+        fillOpacity: 0.75,
+        visible: true
+    };
+}
+
+
+
+
+
+/// gif
 
 function findGif(weatherType) { //doesn't work yet
     var gifString = "http://api.giphy.com/v1/stickers/random?api_key=9NhVNvR04acYobvWGIGoiY5B9pla2JZV&tag=" + weatherType;
