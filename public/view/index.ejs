@@ -12,8 +12,6 @@
 </head>
 
 <body>
-
-
     <!-- get data from backend -->
     <!-- https://stackoverflow.com/questions/16098397/pass-variables-to-javascript-in-expressjs -->
     <script>
@@ -36,12 +34,9 @@
             </div>
         </div>
     </nav>
-    <script>
-        console.log("Width is "+ document.getElementById("littlelogo").style.width + "and height is "+ document.getElementById("littlelogo").style.height);
-    </script>
     <div class="page-container" style="height:70%">
         <div class="container">
-            <img id="header" src="img/logo.png" alt="DAASH">
+            <img id="header" src="img/logo.png" alt="DAASH" style="width:50%">
             <div id="header-description"> Disaster Assistance and Safety Helper </div>
             <table id="description">
                 <tr>
@@ -54,6 +49,9 @@
                 </tr>
             </table>
         </div>
+        <button type="button" class="btn btn-default" id="downButton" style="margin-top: 400px">
+            <span class="glyphicon glyphicon-search" style="width: 10px; height: 10px;"></span>V
+        </button>
     </div>
 
     <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -103,10 +101,10 @@
         <div id="more"> More Severe </div>
     </div>
 
-    <div class="container" id="maps-news">
-        <div class="row" style="height: 100%;">
-            <div class="col-9" id="map"></div>
-            <div class="col-3" id="news">
+    <div class="container col-md-12" id="maps-news">
+        <div class="row" style="height: 100%;padding-left: 3%; padding-right: 3%">
+            <div class="col-md-9" id="map"></div>
+            <div class="col-md-3" id="news">
                 <!-- <div id="news-header"> Live news: </div> -->
                 <ul class="list-unstyled" id="media-list">
                 </ul>
@@ -115,7 +113,7 @@
     </div>
 
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js" integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em" crossorigin="anonymous"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7ykUUPTmMCeAfmSTnbk0f0cHnYbojaII&callback=initMap" async defer></script>

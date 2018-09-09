@@ -301,3 +301,9 @@ function toggleOverlay() {
         map.data.setStyle(styleFeature);
     }
 }
+
+$('#downButton').click(function() {
+    $('html,body').animate({
+            scrollTop: $("#map").offset().top},
+        'slow');
+});
