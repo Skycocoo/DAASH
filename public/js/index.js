@@ -52,13 +52,23 @@ const curDisasterUrl = "http://localhost:3000/curdata";
 let directionsService;
 let directionsDisplay;
 
-function initMap() {
+function initMap(coordinates) {
     directionsService = new google.maps.DirectionsService();
     directionsDisplay = new google.maps.DirectionsRenderer();
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: 38.5695040941581, lng: -93.81375094516613},
-        zoom: 4,
-    });
+    if(coordinates==null) {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 38.5695040941581, lng: -93.81375094516613},
+            zoom: 4,
+        });
+    }
+    else{
+        let latitude=coordinates.coords.latitude;
+        let longitude=coordinates.coords.longitude;
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: latitude, lng: longitude},
+            zoom: 10,
+        });
+    }
 
     // styling by the past data
     let feature = map.data.setStyle(styleFeature);
