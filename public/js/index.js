@@ -91,29 +91,6 @@ function initMap(coordinates) {
         xhr2.send();
     });
 
-    // let xhr = new XMLHttpRequest();
-    // xhr.open('POST', curDisasterUrl, true);
-    // xhr.onreadystatechange = function() {
-    //     if (xhr.readyState === 4 && xhr.status === 200) {
-    //         JSON.parse(xhr.response).forEach((event) => {
-    //
-    //             let xhr2 = new XMLHttpRequest();
-    //             xhr2.open('GET', `https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/geocode/json?components=administrative_area:${event.state}|administrative_area:${event.county}&key=AIzaSyC7ykUUPTmMCeAfmSTnbk0f0cHnYbojaII`, true);
-    //             xhr2.onreadystatechange = function() {
-    //                 if (xhr2.readyState === 4 && xhr2.status === 200 && JSON.parse(xhr2.response).results[0]) {
-    //                     addMarker(JSON.parse(xhr2.response).results[0].geometry.location.lat,
-    //                         JSON.parse(xhr2.response).results[0].geometry.location.lng,
-    //                         event.title, event.type);
-    //                 }
-    //             };
-    //             xhr2.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    //             xhr2.send();
-    //         });
-    //     }
-    // };
-    // xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    // xhr.send(JSON.stringify(request));
-
     google.maps.event.addListener(map, "dragend", function () {
         let lat = map.data.map.center.lat();
         let lng = map.data.map.center.lng();
@@ -207,22 +184,6 @@ function addMarker(lat, lng, title, disaster) {
     }
     markers[disaster].push(marker);
 
-    // marker = new google.maps.Marker({
-    //     position: uluru,
-    //     title,
-    //     map: map
-    // });
-    // let circle  = new google.maps.Circle({
-    //     strokeColor: (disasters[disaster]  === undefined) ? '#8d8d8d' : disasters[disaster].color,
-    //     strokeOpacity: 0.8,
-    //     strokeWeight: 2,
-    //     fillColor: (disasters[disaster]  === undefined) ? '#8d8d8d' : disasters[disaster].color,
-    //     fillOpacity: 0.1,
-    //     map: map,
-    //     center: uluru,
-    //     radius: (disasters[disaster]  === undefined) ? 3000 : disasters[disaster].radius
-    // });
-
     marker.addListener('click', function() {
         let modal = $('#modal');
         // modal.find('.modal_title').text("TEST");
@@ -236,37 +197,20 @@ function addMarker(lat, lng, title, disaster) {
             topic: title,
             type: disaster
         };
+
         xhr = new XMLHttpRequest();
         xhr.open("POST", 'http://localhost:3000/news');
         xhr.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) {
                 let data = JSON.parse(xhr.responseText);
                 $("#media-list").empty();
-                // while (newsCounter > 1) {
-                //     removeItems(newsCounter);
-                //     newsCounter--;
-                // }
-                // newsCounter++;
-
-                console.log(data);
                 data.forEach((newsArticle) => {
                     addItem(newsArticle.title, newsArticle.url, newsArticle.img);
-                    // newsCounter++;
                 });
-                // newsCounter--;
             }
         };
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xhr.send(JSON.stringify(request));
-
-        // if(document.getElementById("map").getAttribute('class')=="col-9"){
-        //     document.getElementById("map").setAttribute('class', 'col-12');
-        //     document.getElementById("news").style.display="none";
-        // }
-        // else{
-        //     document.getElementById("map").setAttribute('class', 'col-9');
-        //     document.getElementById("news").style.display="inline";
-        // }
     })
 }
 
@@ -338,22 +282,7 @@ function toggleIcons(disaster) {
     }
 }
 
-// /// gif
-// function findGif(weatherType) { //doesn't work yet
-//     var gifString = "http://api.giphy.com/v1/stickers/random?api_key=9NhVNvR04acYobvWGIGoiY5B9pla2JZV&tag=" + weatherType;
-//     xhr.open("GET", gifString);
-//     xhr.send();
-//     xhr.onreadystatechange = function () {
-//         if (this.readyState == 4 && this.status == 200) {
-//             var data = xhr.responseText;
-//             return data.data[0].images.downsized.url;//public url to gif < 2 MB
-//         }
-//     }
-// }
-
 function addItem(title, url, img){
-    // if (!($("#media-list").height() < 0.7 * window_height)) return;
-
     var news = "<li class=\"media\"" + ">" +
                 "<a href=\"" + url + "\">" +
                 "<img class=\"mr3\" src=\"" + img + "\">" +
@@ -362,31 +291,6 @@ function addItem(title, url, img){
                 title +
                 "</div>";
     $(news).appendTo("#media-list");
-
-    // let ul = document.getElementById("media-list");
-    // let li = document.createElement("li");
-    // let imgEle = document.createElement("img");
-    // let div = document.createElement("div");
-    // let anchor = document.createElement('a');
-    // let header = document.createElement("h5");
-    // anchor.setAttribute('href', url);
-    // imgEle.setAttribute('class', 'mr3');
-    // imgEle.setAttribute('src', img);
-    // div.setAttribute('class', 'media-body');
-    // header.setAttribute('class', 'mt-0 mb-1');
-    // header.appendChild(document.createTextNode(title));
-    // anchor.appendChild(imgEle);
-    // li.setAttribute('class','media');
-    // li.setAttribute('id', `doc${id}`);
-    // div.appendChild(header);
-    // li.appendChild(anchor);
-    // li.appendChild(div);
-    // ul.appendChild(li);
-}
-
-function removeItems(id) {
-    // document.getElementById("media-list").removeChild()
-    document.getElementById(`doc${id}`).parentNode.removeChild(document.getElementById(`doc${id}`));
 }
 
 function toggleOverlay() {

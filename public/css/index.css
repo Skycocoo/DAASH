@@ -91,6 +91,14 @@ td {
     background-color: #fff;
 }
 
+#slider::before {
+    content: "Historical Disaster per State";
+    position: absolute;
+    display: block;
+    top: -15px;
+    font-size: 12px;
+}
+
 .slider-container #less, .slider-container #more {
     display: inline-block;
     line-height: 30px;
