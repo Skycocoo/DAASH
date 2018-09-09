@@ -17,7 +17,8 @@
     <!-- get data from backend -->
     <!-- https://stackoverflow.com/questions/16098397/pass-variables-to-javascript-in-expressjs -->
     <script>
-        let pastData = <%- JSON.stringify(data) %>;
+        let pastData = <%- JSON.stringify(past) %>;
+        let curData = <%- JSON.stringify(cur) %>;
         let total = <%- total %>;
     </script>
 
