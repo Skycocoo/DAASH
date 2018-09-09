@@ -30,7 +30,7 @@ function coordToState(lat, long){
 
 function getGeolocation(){
     if(navigator.geolocation) {
-        navigator.geolocation.watchPosition(currentLocation); //updates as user moves
+        navigator.geolocation.getCurrentPosition(currentLocation); //updates as user moves
     }
 }
 
