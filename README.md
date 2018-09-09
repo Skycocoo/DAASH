@@ -17,3 +17,7 @@ DAASH is a web app that provides useful disaster information in a user-friendly 
 We used Node.js for the backend, using APIs from FEMA, NewsAPI, and PredictHQ. We used a combination of JavaScript, HTML, and CSS to craft the frontend.
 
 #### Display
+
+![alt-text](https://github.com/Skycocoo/Pennapps-DAASH/blob/master/screenshot/home.png?raw=true)
+![alt-text](https://github.com/Skycocoo/Pennapps-DAASH/blob/master/screenshot/map.png?raw=true)
+![alt-text](https://github.com/Skycocoo/Pennapps-DAASH/blob/master/screenshot/about.png?raw=true)
