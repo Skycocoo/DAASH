@@ -1,8 +1,6 @@
 
 function currentLocation(coordinates){
-    let lat=coordinates.coords.latitude;
-    let long=coordinates.coords.longitude;
-    console.log("Latitude="+lat+" and Longitde="+long);
+    initMap(coordinates);
 }
 
 function coordToCity(lat, long){
@@ -32,7 +30,7 @@ function coordToState(lat, long){
 
 function getGeolocation(){
     if(navigator.geolocation) {
-        navigator.geolocation.watchPosition(currentLocation); //updates as user moves
+        navigator.geolocation.getCurrentPosition(currentLocation); //updates as user moves
     }
 }
 
@@ -41,4 +39,5 @@ function askForCoordinates(){
         //need to set center of map to lat and long for initMap
     }
 }
+
 askForCoordinates();

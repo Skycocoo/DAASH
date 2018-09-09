@@ -13,11 +13,13 @@ let yyyy = today.getFullYear();
 let disasters = {
     Flood: {
         color: '#6ACBFF',
-        radius: 7000
+        radius: 7000,
+        icon: '/img/lightning2u.png'
     },
     Fire: {
         color: '#ff312c',
-        radius: 8000
+        radius: 8000,
+        icon: '/img/fire.png'
     }
 };
 
@@ -32,7 +34,7 @@ const curDisasterUrl = "http://localhost:3000/curdata";
 let directionsService;
 let directionsDisplay;
 
-function initMap() {
+function initMap(coordinates) {
     directionsService = new google.maps.DirectionsService();
     directionsDisplay = new google.maps.DirectionsRenderer();
     map = new google.maps.Map(document.getElementById('map'), {
@@ -112,6 +114,26 @@ function calcRoute() {
 
 function addMarker(lat, lng, title, disaster) {
     let uluru = {lat, lng};
+    // if (disasters[disaster].icon !== undefined) {
+    //     let image = {
+    //         url: disasters[disaster].icon,
+    //         size: new google.maps.Size(50, 50),
+    //         origin: new google.maps.Point(0, 0),
+    //         anchor: new google.maps.Point(0, 32),
+    //         scaledSize: new google.maps.Size(40, 40)
+    //     };
+    //
+    //     let marker = new google.maps.Marker({
+    //         position: uluru,
+    //         title,
+    //         icon: image,
+    //         map: map
+    //     });
+    // } else {
+    //
+    // }
+
+
     let marker = new google.maps.Marker({
         position: uluru,
         title,
@@ -137,34 +159,21 @@ function addMarker(lat, lng, title, disaster) {
         map.setCenter(uluru);
         map.setZoom(11);
         curMarker = uluru;
-    })
-}
 
-function addCustomMarker() {
-    let icons = {
-        lightning: {
-            icon: '/img/lightning2u.png'
-        }
-    };
-
-    let image = {
-        url: icons.lightning.icon,
-        size: new google.maps.Size(50, 50),
-        origin: new google.maps.Point(0, 0),
-        anchor: new google.maps.Point(0, 32),
-        scaledSize: new google.maps.Size(40, 40)
-    };
-
-    let uluru = {lat: 39.9526, lng: -75.1652};
-    let marker = new google.maps.Marker({
-        position: uluru,
-        icon: image,
-        title: "Lightning",
-        map: map
-    });
-
-    marker.addListener('click', function() {
-        alert("LIGHTNING");
+        let request = {
+            topic: title,
+            type: disaster
+        };
+        xhr = new XMLHttpRequest();
+        xhr.open("POST", 'http://localhost:3000/news');
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                let data = JSON.parse(xhr.responseText);
+                console.log(data);
+            }
+        };
+        xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhr.send(JSON.stringify(request));
     })
 }
 
@@ -188,7 +197,6 @@ function calcCrow(lat1, lon1) {
 function toRad(Value) {
     return Value * Math.PI / 180;
 }
-
 
 
 /** Loads the state boundary polygons from a GeoJSON source. */
@@ -228,19 +236,15 @@ function styleFeature(feature) {
 }
 
 
-
-
-
-/// gif
-
-function findGif(weatherType) { //doesn't work yet
-    var gifString = "http://api.giphy.com/v1/stickers/random?api_key=9NhVNvR04acYobvWGIGoiY5B9pla2JZV&tag=" + weatherType;
-    xhr.open("GET", gifString);
-    xhr.send();
-    xhr.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-            var data = xhr.responseText;
-            return data.data[0].images.downsized.url;//public url to gif < 2 MB
-        }
-    }
-}
+// /// gif
+// function findGif(weatherType) { //doesn't work yet
+//     var gifString = "http://api.giphy.com/v1/stickers/random?api_key=9NhVNvR04acYobvWGIGoiY5B9pla2JZV&tag=" + weatherType;
+//     xhr.open("GET", gifString);
+//     xhr.send();
+//     xhr.onreadystatechange = function () {
+//         if (this.readyState == 4 && this.status == 200) {
+//             var data = xhr.responseText;
+//             return data.data[0].images.downsized.url;//public url to gif < 2 MB
+//         }
+//     }
+// }

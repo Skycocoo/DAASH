@@ -8,7 +8,6 @@ const phq = require('predicthq');
 let client = new phq.Client({access_token: "BsTZYhJxF0jBXE9GG7a0e7zM4JyNq9", fetch: fetch});
 const NewsAPI = require('newsapi');
 const newsapi = new NewsAPI('bbc2f161eef842538b561fe4256186a0');
-const nearbyCities = require("nearby-cities");
 
 const firebase = require('firebase');
 require("firebase/firestore");
@@ -56,21 +55,16 @@ function findRecentData(radius, lat, lng, endDate, startDate) {
         });
 }
 
-function findNews(lat, lng, date, callback) {
+function findNews(topic, type, callback) {
     let news = [];
-    const query = {latitude: lat, longitude: lng};
-    const cities = nearbyCities(query);
-    console.log(cities[0]);
 
     newsapi.v2.everything({
-        q: `${cities[0].name}`, // Add different disasters here
-        // sources: 'reuters,associated-press,abc-news,cnn,mscnbc,cnbc',
-        from: date,
+        q: `+${topic} +${type}`, // Add different disasters here
         language: 'en',
         sortBy: 'relevancy'
     }).then(response => {
         response.articles.forEach((article) => {
-            if (article.title.includes(`${cities[0].name}`)) {
+            if (article.title.includes(type)) {
                 newsArticle = {
                     title: article.title,
                     url: article.url,
@@ -79,11 +73,14 @@ function findNews(lat, lng, date, callback) {
 
                 news.push(newsArticle);
             }
+
         });
         callback(news);
     });
 }
-
+findNews("ramsey canyon fire", "fire", (news) => {
+    console.log(news);
+});
 
 // firebase
 
@@ -233,7 +230,7 @@ module.exports = () => {
     });
 
     router.post('/news', (req, res, next) => {
-        findNews(req.body.lat, req.body.lng, req.body.date, (data) => {
+        findNews(req.body.topic, req.body.type, (data) => {
             res.send(data);
         });
     });
