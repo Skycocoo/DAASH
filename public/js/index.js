@@ -5,26 +5,42 @@ let lastLat = 0;
 let lastLng = 0;
 let today = new Date();
 let curMarker = {};
-
+let markers = {
+    Hurricane: [],
+    Flood: [],
+    Fire: [],
+    Tornado: [],
+    Volcano: []
+};
 let dd = (today.getDate() < 10) ? '0'+today.getDate() : today.getDate();
 let mm = (today.getMonth() < 10) ? '0'+ (today.getMonth() - 1) : today.getMonth() - 1; // January is 0!
 let yyyy = today.getFullYear();
 
 let disasters = {
     Flood: {
-        color: '#6ACBFF',
-        radius: 7000,
+        // color: '#6ACBFF',
+        // radius: 7000,
         icon: '/img/lightning2u.png'
     },
     Fire: {
-        color: '#ff312c',
-        radius: 8000,
+        // color: '#ff312c',
+        // radius: 8000,
         icon: '/img/firenew.png'
     },
     Hurricane: {
-        color: '#656565',
-        radius: 10000,
+        // color: '#656565',
+        // radius: 10000,
         icon: '/img/hurricaneclip.png'
+    },
+    Tornado: {
+        // color: '#FFFFFF',
+        // radius: 9000,
+        icon: '/img/tornado.jpg'
+    },
+    Volcano: {
+        // color: '#ff5523',
+        // radius: 9500,
+        icon: '/img/fire.jpg'
     }
 };
 
@@ -39,7 +55,7 @@ const curDisasterUrl = "http://localhost:3000/curdata";
 let directionsService;
 let directionsDisplay;
 
-function initMap(coordinates) {
+function initMap() {
     directionsService = new google.maps.DirectionsService();
     directionsDisplay = new google.maps.DirectionsRenderer();
     map = new google.maps.Map(document.getElementById('map'), {
@@ -142,22 +158,23 @@ function addMarker(lat, lng, title, disaster) {
             map: map
         });
     }
+    markers[disaster].push(marker);
 
     // marker = new google.maps.Marker({
     //     position: uluru,
     //     title,
     //     map: map
     // });
-    let circle  = new google.maps.Circle({
-        strokeColor: (disasters[disaster]  === undefined) ? '#8d8d8d' : disasters[disaster].color,
-        strokeOpacity: 0.8,
-        strokeWeight: 2,
-        fillColor: (disasters[disaster]  === undefined) ? '#8d8d8d' : disasters[disaster].color,
-        fillOpacity: 0.1,
-        map: map,
-        center: uluru,
-        radius: (disasters[disaster]  === undefined) ? 3000 : disasters[disaster].radius
-    });
+    // let circle  = new google.maps.Circle({
+    //     strokeColor: (disasters[disaster]  === undefined) ? '#8d8d8d' : disasters[disaster].color,
+    //     strokeOpacity: 0.8,
+    //     strokeWeight: 2,
+    //     fillColor: (disasters[disaster]  === undefined) ? '#8d8d8d' : disasters[disaster].color,
+    //     fillOpacity: 0.1,
+    //     map: map,
+    //     center: uluru,
+    //     radius: (disasters[disaster]  === undefined) ? 3000 : disasters[disaster].radius
+    // });
 
     marker.addListener('click', function() {
         let modal = $('#modal');
@@ -165,7 +182,7 @@ function addMarker(lat, lng, title, disaster) {
         $('#modal-title').text(title);
         modal.modal();
         map.setCenter(uluru);
-        map.setZoom(11);
+        map.setZoom(10);
         curMarker = uluru;
 
         let request = {
@@ -177,7 +194,6 @@ function addMarker(lat, lng, title, disaster) {
         xhr.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) {
                 let data = JSON.parse(xhr.responseText);
-                console.log(data);
             }
         };
         xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -243,7 +259,16 @@ function styleFeature(feature) {
     };
 }
 
-
+function toggleIcons(disaster) {
+    for (let i = 0; i < markers[disaster].length; i++) {
+        let marker = markers[disaster][i];
+        if (!marker.getVisible()) {
+            marker.setVisible(true);
+        } else {
+            marker.setVisible(false);
+        }
+    }
+}
 // /// gif
 // function findGif(weatherType) { //doesn't work yet
 //     var gifString = "http://api.giphy.com/v1/stickers/random?api_key=9NhVNvR04acYobvWGIGoiY5B9pla2JZV&tag=" + weatherType;
