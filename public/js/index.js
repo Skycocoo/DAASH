@@ -64,7 +64,6 @@ function initMap() {
     let feature = map.data.setStyle(styleFeature);
     loadMapShapes();
 
-
     curData.forEach((event) => {
         let xhr2 = new XMLHttpRequest();
         xhr2.open('GET', `https://cors-anywhere.herokuapp.com/https://maps.googleapis.com/maps/api/geocode/json?components=administrative_area:${event.state}|administrative_area:${event.county}&key=AIzaSyC7ykUUPTmMCeAfmSTnbk0f0cHnYbojaII`, true);
@@ -353,4 +352,11 @@ function removeItems(id) {
     // document.getElementById("media-list").removeChild()
     console.log(id);
     document.getElementById(`doc${id}`).parentNode.removeChild(document.getElementById(`doc${id}`));
+}
+
+function toggleOverlay() {
+    let toToggle = !document.getElementById("overlayCheck").getAttribute("value");
+    if (!toToggle) map.data.setStyle({visible: toToggle});
+    else map.data.setStyle(styleFeature);
+    document.getElementById("overlayCheck").setAttribute("value", toToggle);
 }
